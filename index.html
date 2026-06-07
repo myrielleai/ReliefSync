@@ -3,240 +3,206 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ReliefSync: Predictive Supply Forecaster</title>
-  <meta name="description" content="AI-driven disaster logistics engine for real-time dispatch forecasting and inventory optimization.">
-  <!-- Google Fonts: Inter & JetBrains Mono for a modern, industrial data aesthetic -->
+  <title>ReliefSync — Predictive Supply Forecaster</title>
+  <meta name="description" content="Predictive logistics and machine learning-driven inventory optimization for disaster command centers.">
+  <!-- Google Fonts: Inter for typography -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <!-- Presentation Frame to lock the layout into a beautiful 16:9 container -->
-  <div class="presentation-container">
-    <div class="canvas-frame">
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="logo">ReliefSync</a>
       
-      <!-- Split-Pane Layout -->
-      <div class="split-pane">
-        
-        <!-- Left Sidebar (Control Panel) -->
-        <aside class="sidebar">
-          <div class="sidebar-top">
-            <!-- App Brand Block -->
-            <div class="brand-block">
-              <h1 id="app-title">ReliefSync</h1>
-              <p class="subtitle">Disaster Logistics Engine</p>
-            </div>
-            
-            <!-- Controls Form -->
-            <div class="controls-form">
-              <!-- Evacuation Center Dropdown -->
-              <div class="form-group">
-                <label for="evac-center-select">1. Select Evacuation Center</label>
-                <div class="custom-select-wrapper">
-                  <select id="evac-center-select" name="evac-center">
-                    <option value="brgy_172">Brgy. 172 Covered Court ▾</option>
-                    <option value="brgy_173">Brgy. 173 Gymnasium ▾</option>
-                    <option value="brgy_174">Brgy. 174 Elementary School ▾</option>
-                  </select>
-                </div>
-              </div>
-              
-              <!-- Operation Date Dropdown -->
-              <div class="form-group">
-                <label for="operation-date-select">2. Target Operation Date</label>
-                <div class="custom-select-wrapper">
-                  <select id="operation-date-select" name="operation-date">
-                    <option value="2026-06-08">06 / 08 / 2026 ▾</option>
-                    <option value="2026-06-09">06 / 09 / 2026 ▾</option>
-                    <option value="2026-06-10">06 / 10 / 2026 ▾</option>
-                  </select>
-                </div>
-              </div>
-              
-              <!-- Checkbox Group -->
-              <div class="form-group">
-                <label class="group-label">3. Select Relief Categories to Predict</label>
-                <div class="checkbox-group">
-                  <label class="checkbox-label" for="category-water">
-                    <input type="checkbox" id="category-water" name="categories" value="water" checked>
-                    <span class="custom-checkbox"></span>
-                    <span class="label-text">Bottled Water</span>
-                  </label>
-                  
-                  <label class="checkbox-label" for="category-rice">
-                    <input type="checkbox" id="category-rice" name="categories" value="rice" checked>
-                    <span class="custom-checkbox"></span>
-                    <span class="label-text">Rice Packs</span>
-                  </label>
-                  
-                  <label class="checkbox-label" for="category-medical">
-                    <input type="checkbox" id="category-medical" name="categories" value="medical">
-                    <span class="custom-checkbox"></span>
-                    <span class="label-text">Medical Kits</span>
-                  </label>
-                </div>
-              </div>
-            </div>
-          </div>
-          
-          <!-- Bottom Action Button -->
-          <div class="sidebar-bottom">
-            <button id="btn-generate-forecast" class="primary-btn">
-              <span class="btn-content">⚡ Generate 72-Hour Forecast</span>
-              <span class="btn-loader hidden">
-                <svg class="spinner" viewBox="0 0 50 50">
-                  <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="5"></circle>
-                </svg>
-                Calculating Forecast...
-              </span>
-            </button>
-          </div>
-        </aside>
-        
-        <!-- Main Workspace (Right Side Dashboard) -->
-        <main class="main-content">
-          
-          <!-- Row A: Live Camp Status (Camp Pulse Metrics) -->
-          <section class="dashboard-row row-status" id="row-status">
-            <div class="status-card" id="card-population">
-              <span class="card-label">Current Evacuee Population</span>
-              <span class="card-value" id="val-population">1,250</span>
-              <div class="card-indicator">Active Registration</div>
-            </div>
-            
-            <div class="status-card highlight-alert" id="card-alert">
-              <span class="card-label">Supply Status Level</span>
-              <span class="card-value alert-text" id="val-alert">CRITICAL</span>
-              <div class="card-indicator">Immediate Action Required</div>
-            </div>
-            
-            <div class="status-card" id="card-window">
-              <span class="card-label">Optimal Dispatch Window</span>
-              <span class="card-value" id="val-window">Within 4 Hours</span>
-              <div class="card-indicator">Logistics Schedule</div>
-            </div>
-          </section>
-          
-          <!-- Row B: Predictive Demand Visualizer -->
-          <section class="dashboard-row row-chart" id="row-chart">
-            <div class="chart-container-box">
-              <div class="chart-header">
-                <h2 class="section-title">Predictive Demand Visualizer</h2>
-                <div class="chart-legend" id="chart-legend">
-                  <!-- Legend items will be added dynamically by JS to align with current checkboxes -->
-                </div>
-              </div>
-              
-              <!-- Clean SVG Line Chart Area -->
-              <div class="svg-wrapper" id="svg-wrapper">
-                <svg id="demand-chart" viewBox="0 0 1000 350" preserveAspectRatio="none">
-                  <!-- Definitions for gradients and drop shadows -->
-                  <defs>
-                    <!-- Blue gradient for Water -->
-                    <linearGradient id="gradient-water" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stop-color="#0066cc" stop-opacity="0.15"/>
-                      <stop offset="100%" stop-color="#0066cc" stop-opacity="0.0"/>
-                    </linearGradient>
-                    <!-- Brown gradient for Rice -->
-                    <linearGradient id="gradient-rice" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stop-color="#8b5a2b" stop-opacity="0.15"/>
-                      <stop offset="100%" stop-color="#8b5a2b" stop-opacity="0.0"/>
-                    </linearGradient>
-                    <!-- Gray gradient for Medical -->
-                    <linearGradient id="gradient-medical" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stop-color="#8e8e93" stop-opacity="0.15"/>
-                      <stop offset="100%" stop-color="#8e8e93" stop-opacity="0.0"/>
-                    </linearGradient>
-                  </defs>
-                  
-                  <!-- Y-Axis Grid Lines -->
-                  <g class="grid-lines-y">
-                    <line x1="80" y1="50" x2="950" y2="50" />
-                    <line x1="80" y1="125" x2="950" y2="125" />
-                    <line x1="80" y1="200" x2="950" y2="200" />
-                    <line x1="80" y1="275" x2="950" y2="275" />
-                  </g>
-
-                  <!-- X-Axis Grid Lines (Time milestones) -->
-                  <g class="grid-lines-x">
-                    <line x1="80" y1="50" x2="80" y2="275" />
-                    <line x1="225" y1="50" x2="225" y2="275" />
-                    <line x1="370" y1="50" x2="370" y2="275" />
-                    <line x1="515" y1="50" x2="515" y2="275" />
-                    <line x1="660" y1="50" x2="660" y2="275" />
-                    <line x1="805" y1="50" x2="805" y2="275" />
-                    <line x1="950" y1="50" x2="950" y2="275" />
-                  </g>
-
-                  <!-- Safety Buffer Threshold (Dotted Line Across Middle) -->
-                  <line id="buffer-threshold-line" x1="80" y1="180" x2="950" y2="180" stroke-dasharray="5 5" />
-                  
-                  <!-- Text Annotation Layer pointing to Safety Buffer -->
-                  <g class="annotation-layer">
-                    <rect x="800" y="165" width="140" height="20" rx="3" fill="#ffffff" stroke="#ff4b4b" stroke-width="1" />
-                    <text x="810" y="179" class="annotation-text">[Safety Buffer Threshold]</text>
-                  </g>
-
-                  <!-- Axes Labels -->
-                  <text x="35" y="165" class="axis-title y-axis-title" transform="rotate(-90 35 165)">Units Remaining in Stock</text>
-                  <text x="515" y="315" class="axis-title x-axis-title">Next 72 Hours (12h, 24h, 36h, 48h, 60h, 72h)</text>
-
-                  <!-- Y-Axis Labels -->
-                  <text x="70" y="54" class="tick-label label-y">4,000</text>
-                  <text x="70" y="129" class="tick-label label-y">2,500</text>
-                  <text x="70" y="204" class="tick-label label-y">1,000</text>
-                  <text x="70" y="279" class="tick-label label-y">0</text>
-
-                  <!-- X-Axis Labels -->
-                  <text x="80" y="295" class="tick-label label-x">Arrival</text>
-                  <text x="225" y="295" class="tick-label label-x">12h</text>
-                  <text x="370" y="295" class="tick-label label-x">24h</text>
-                  <text x="515" y="295" class="tick-label label-x">36h</text>
-                  <text x="660" y="295" class="tick-label label-x">48h</text>
-                  <text x="805" y="295" class="tick-label label-x">60h</text>
-                  <text x="950" y="295" class="tick-label label-x">72h</text>
-                  
-                  <!-- Dynamic SVG Paths will go here -->
-                  <g id="chart-paths-container"></g>
-                  
-                  <!-- Interactivity Overlays / Tooltips -->
-                  <g id="chart-dots-container"></g>
-                </svg>
-                <div class="chart-tooltip" id="chart-tooltip"></div>
-              </div>
-            </div>
-          </section>
-          
-          <!-- Row C: Actionable Packing Manifest -->
-          <section class="dashboard-row row-manifest" id="row-manifest">
-            <div class="manifest-container-box">
-              <div class="manifest-header">
-                <h2 class="section-title">Actionable Packing Manifest</h2>
-                <div class="manifest-badge">Calculated Dispatch Recommendations</div>
-              </div>
-              
-              <!-- 4-Column Data Grid / Table -->
-              <div class="table-wrapper">
-                <table class="manifest-table" id="manifest-table">
-                  <thead>
-                    <tr>
-                      <th class="col-item">Relief Item Category</th>
-                      <th class="col-demand">Predicted 72H Demand</th>
-                      <th class="col-stock">Current On-Site Stock</th>
-                      <th class="col-dispatch highlight-column">RECOMMENDED DISPATCH QUANTITY</th>
-                    </tr>
-                  </thead>
-                  <tbody id="manifest-table-body">
-                    <!-- Rows will be injected and updated dynamically by JS -->
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          </section>
-        </main>
-        
+      <nav class="nav-links">
+        <a href="#features" class="nav-link">Features</a>
+        <a href="#impact" class="nav-link" id="link-impact">Impact Metrics</a>
+        <a href="#docs" class="nav-link" id="link-docs">Documentation</a>
+      </nav>
+      
+      <div class="nav-actions">
+        <a href="portal.html" class="portal-btn">Access Portal →</a>
       </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-container">
+      <!-- Hero Left: Text & CTA -->
+      <div class="hero-text-block">
+        <h1 class="hero-headline">Shifting Disaster Logistics From Reactive Crisis to Predictive Relief.</h1>
+        <p class="hero-supporting">
+          Empowering municipal disaster teams and humanitarian networks with machine learning to eliminate supply bottlenecks, prevent resource waste, and ensure equitable distribution.
+        </p>
+        <button id="btn-deploy-cta" class="cta-primary-btn">Deploy for Your Municipality</button>
+      </div>
+      
+      <!-- Hero Right: SVG Route Map Graphic -->
+      <div class="hero-graphic-block">
+        <div class="graphic-card">
+          <svg class="routes-map-svg" viewBox="0 0 500 400" width="100%" height="100%">
+            <!-- Background grid pattern -->
+            <defs>
+              <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse">
+                <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#f1f1f4" stroke-width="1"/>
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#grid)" />
+
+            <!-- Route Paths (Animated) -->
+            <path class="route-path path-one" d="M 100 250 L 220 180 L 380 150" />
+            <path class="route-path path-two" d="M 100 250 L 220 280 L 400 300" />
+            <path class="route-path path-three" d="M 220 180 L 320 280" />
+
+            <!-- Active delivery packet circles -->
+            <circle class="delivery-dot dot-one" r="5" fill="#0066cc" />
+            <circle class="delivery-dot dot-two" r="5" fill="#8b5a2b" />
+
+            <!-- Node Points -->
+            <!-- Base Station / Depot -->
+            <g class="map-node node-depot" transform="translate(100, 250)">
+              <circle r="12" fill="#e5e5ea" stroke="#1c1c1e" stroke-width="2" />
+              <circle r="4" fill="#1c1c1e" />
+              <text y="-20" class="node-label">Central Depot</text>
+            </g>
+
+            <!-- Node 1: Evac Court -->
+            <g class="map-node node-court" transform="translate(220, 180)">
+              <circle r="8" fill="#ffffff" stroke="#0066cc" stroke-width="2" />
+              <circle class="pulse-ring" r="14" fill="none" stroke="#0066cc" stroke-width="1.5" />
+              <text y="-16" class="node-label">Brgy. 172 Court</text>
+            </g>
+
+            <!-- Node 2: Gym -->
+            <g class="map-node node-gym" transform="translate(380, 150)">
+              <circle r="8" fill="#ffffff" stroke="#8b5a2b" stroke-width="2" />
+              <text y="-16" class="node-label">Brgy. 173 Gym</text>
+            </g>
+
+            <!-- Node 3: School -->
+            <g class="map-node node-school" transform="translate(400, 300)">
+              <circle r="8" fill="#ffffff" stroke="#ff4b4b" stroke-width="2" />
+              <circle class="pulse-ring-alert" r="14" fill="none" stroke="#ff4b4b" stroke-width="1.5" />
+              <text y="24" class="node-label alert-node">Brgy. 174 School</text>
+            </g>
+
+            <!-- Node 4: Secondary Gym -->
+            <g class="map-node node-secondary" transform="translate(320, 280)">
+              <circle r="6" fill="#ffffff" stroke="#8e8e93" stroke-width="2" />
+              <text y="18" class="node-label">Gym 173-B</text>
+            </g>
+          </svg>
+          <div class="graphic-badge">
+            <span class="pulse-bullet"></span> ML Route Dispatch Nodes (Live Simulation)
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Problem & Value Proposition Grid -->
+  <section class="value-prop-section" id="features">
+    <div class="section-container">
+      <div class="section-heading-block">
+        <span class="section-subtitle">Core Pillars</span>
+        <h2 class="section-title">The Logistics Management Framework</h2>
+      </div>
+      
+      <div class="value-grid">
+        <!-- Box 1 -->
+        <div class="val-box">
+          <div class="box-icon">📊</div>
+          <h3 class="box-title">Predictive Demand Forecasting</h3>
+          <p class="box-desc">
+            Replace manual spreadsheets and delayed data logs with 72-hour machine learning projections, mapping evacuee rates and supply trends automatically.
+          </p>
+        </div>
+        
+        <!-- Box 2 -->
+        <div class="val-box">
+          <div class="box-icon">⚡</div>
+          <h3 class="box-title">Logistical Resource Optimization</h3>
+          <p class="box-desc">
+            Generate instant packing manifests tailored to on-site stock availability. Eliminate duplicate dispatch trips, minimize delivery times, and cut fuel emissions.
+          </p>
+        </div>
+        
+        <!-- Box 3 -->
+        <div class="val-box">
+          <div class="box-icon">⚖️</div>
+          <h3 class="box-title">Equitable Crisis Distribution</h3>
+          <p class="box-desc">
+            Ensure isolated or marginalized evacuation centers receive their fair share of medical kits, food, and water without bureaucratic bottlenecks.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-left">
+        <p class="copyright">© 2026 ReliefSync. All rights reserved.</p>
+      </div>
+      <div class="footer-right">
+        <span class="info-badge">Built for Info-Systems Innovation</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Deploy Request Modal (Popup Dialog) -->
+  <div class="modal-overlay" id="modal-deploy">
+    <div class="modal-card">
+      <button class="modal-close-btn" id="btn-close-modal">✕</button>
+      <div class="modal-header">
+        <h3 class="modal-title">Request Municipal Deployment</h3>
+        <p class="modal-subtitle">Integrate ReliefSync into your local government disaster planning protocols.</p>
+      </div>
+      
+      <form class="modal-form" id="deploy-request-form">
+        <div class="form-group">
+          <label for="input-municipality">Municipality / City Name</label>
+          <input type="text" id="input-municipality" placeholder="e.g. Metro Manila City" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="input-email">Official Contact Email</label>
+          <input type="email" id="input-email" placeholder="logistics@municipality.gov" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="input-notes">Primary Logistics Concerns</label>
+          <textarea id="input-notes" rows="3" placeholder="Describe current bottlenecks (e.g. food delivery delays, spreadsheet tracking issues)"></textarea>
+        </div>
+        
+        <button type="submit" class="modal-submit-btn">Request Integration Code</button>
+      </form>
+      
+      <!-- Success State -->
+      <div class="modal-success hidden" id="modal-success-state">
+        <div class="success-icon">✓</div>
+        <h4>Request Submitted</h4>
+        <p>Your municipal logistics analysis request has been logged. Our implementation team will contact your office within 24 hours.</p>
+        <button class="success-close-btn" id="btn-success-ok">Close Window</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info Modal for Links -->
+  <div class="modal-overlay" id="modal-info">
+    <div class="modal-card info-card">
+      <button class="modal-close-btn" id="btn-close-info">✕</button>
+      <h3 class="modal-title" id="info-modal-title">Document View</h3>
+      <div class="info-modal-content" id="info-modal-content">
+        <!-- Dynamic content injected here -->
+      </div>
+      <button class="modal-submit-btn" id="btn-info-ok" style="margin-top: 25px;">Understood</button>
     </div>
   </div>
 
