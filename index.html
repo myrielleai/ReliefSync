@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ReliefSync — Disaster Logistics Engine</title>
+  <meta name="description" content="AI-driven disaster logistics engine for real-time dispatch forecasting and inventory optimization.">
+  <!-- Google Fonts: Inter & JetBrains Mono for a modern, industrial data aesthetic -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Presentation Frame to lock the layout into a beautiful 16:9 container -->
+  <div class="presentation-container">
+    <div class="canvas-frame">
+      
+      <!-- Split-Pane Layout -->
+      <div class="split-pane">
+        
+        <!-- Left Sidebar (Control Panel) -->
+        <aside class="sidebar">
+          <div class="sidebar-top">
+            <!-- App Brand Block -->
+            <div class="brand-block">
+              <h1 id="app-title">ReliefSync</h1>
+              <p class="subtitle">DISASTER LOGISTICS ENGINE</p>
+            </div>
+            
+            <!-- Controls Form -->
+            <div class="controls-form">
+              <!-- Evacuation Center Dropdown -->
+              <div class="form-group">
+                <label for="evac-center-select">Select Evacuation Center</label>
+                <div class="custom-select-wrapper">
+                  <select id="evac-center-select" name="evac-center">
+                    <option value="brgy_172">Brgy. 172 Covered Court ▾</option>
+                    <option value="brgy_173">Brgy. 173 Gymnasium ▾</option>
+                    <option value="brgy_174">Brgy. 174 Elementary School ▾</option>
+                  </select>
+                </div>
+              </div>
+              
+              <!-- Operation Date Dropdown -->
+              <div class="form-group">
+                <label for="operation-date-select">Operation Date</label>
+                <div class="custom-select-wrapper">
+                  <select id="operation-date-select" name="operation-date">
+                    <option value="2026-06-08">06 / 08 / 2026 ▾</option>
+                    <option value="2026-06-09">06 / 09 / 2026 ▾</option>
+                    <option value="2026-06-10">06 / 10 / 2026 ▾</option>
+                  </select>
+                </div>
+              </div>
+              
+              <!-- Checkbox Group -->
+              <div class="form-group">
+                <label class="group-label">Relief Categories</label>
+                <div class="checkbox-group">
+                  <label class="checkbox-label" for="category-water">
+                    <input type="checkbox" id="category-water" name="categories" value="water" checked>
+                    <span class="custom-checkbox"></span>
+                    <span class="label-text">Bottled Water</span>
+                  </label>
+                  
+                  <label class="checkbox-label" for="category-rice">
+                    <input type="checkbox" id="category-rice" name="categories" value="rice" checked>
+                    <span class="custom-checkbox"></span>
+                    <span class="label-text">Rice Packs</span>
+                  </label>
+                  
+                  <label class="checkbox-label" for="category-medical">
+                    <input type="checkbox" id="category-medical" name="categories" value="medical">
+                    <span class="custom-checkbox"></span>
+                    <span class="label-text">Medical Kits</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Bottom Action Button -->
+          <div class="sidebar-bottom">
+            <button id="btn-generate-forecast" class="primary-btn">
+              <span class="btn-content">⚡ GENERATE 72-HOUR FORECAST</span>
+              <span class="btn-loader hidden">
+                <svg class="spinner" viewBox="0 0 50 50">
+                  <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="5"></circle>
+                </svg>
+                CALCULATING FORECAST...
+              </span>
+            </button>
+          </div>
+        </aside>
+        
+        <!-- Main Workspace (Right Side Dashboard) -->
+        <main class="main-content">
+          
+          <!-- Row A: Live Camp Status -->
+          <section class="dashboard-row row-status" id="row-status">
+            <div class="status-card" id="card-population">
+              <span class="card-label">Current Population</span>
+              <span class="card-value" id="val-population">1,250 Evacuees</span>
+              <div class="card-indicator">Active Registration</div>
+            </div>
+            
+            <div class="status-card highlight-alert" id="card-alert">
+              <span class="card-label">Alert Level</span>
+              <span class="card-value alert-text" id="val-alert">CRITICAL</span>
+              <div class="card-indicator">Immediate Action Required</div>
+            </div>
+            
+            <div class="status-card" id="card-window">
+              <span class="card-label">Optimal Dispatch Window</span>
+              <span class="card-value" id="val-window">Within 4 Hours</span>
+              <div class="card-indicator">Logistics Schedule</div>
+            </div>
+          </section>
+          
+          <!-- Row B: Predictive Demand Graph -->
+          <section class="dashboard-row row-chart" id="row-chart">
+            <div class="chart-container-box">
+              <div class="chart-header">
+                <h2 class="section-title">Predictive Demand Graph</h2>
+                <div class="chart-legend" id="chart-legend">
+                  <!-- Legend items will be added dynamically by JS to align with current checkboxes -->
+                </div>
+              </div>
+              
+              <!-- Clean SVG Line Chart Area -->
+              <div class="svg-wrapper" id="svg-wrapper">
+                <svg id="demand-chart" viewBox="0 0 1000 350" preserveAspectRatio="none">
+                  <!-- Definitions for gradients and drop shadows -->
+                  <defs>
+                    <linearGradient id="gradient-water" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#333333" stop-opacity="0.15"/>
+                      <stop offset="100%" stop-color="#333333" stop-opacity="0.0"/>
+                    </linearGradient>
+                    <linearGradient id="gradient-rice" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#555555" stop-opacity="0.15"/>
+                      <stop offset="100%" stop-color="#555555" stop-opacity="0.0"/>
+                    </linearGradient>
+                    <linearGradient id="gradient-medical" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stop-color="#888888" stop-opacity="0.15"/>
+                      <stop offset="100%" stop-color="#888888" stop-opacity="0.0"/>
+                    </linearGradient>
+                  </defs>
+                  
+                  <!-- Y-Axis Grid Lines -->
+                  <g class="grid-lines-y">
+                    <line x1="80" y1="50" x2="950" y2="50" />
+                    <line x1="80" y1="125" x2="950" y2="125" />
+                    <line x1="80" y1="200" x2="950" y2="200" />
+                    <line x1="80" y1="275" x2="950" y2="275" />
+                  </g>
+
+                  <!-- X-Axis Grid Lines (Time milestones) -->
+                  <g class="grid-lines-x">
+                    <line x1="80" y1="50" x2="80" y2="275" />
+                    <line x1="225" y1="50" x2="225" y2="275" />
+                    <line x1="370" y1="50" x2="370" y2="275" />
+                    <line x1="515" y1="50" x2="515" y2="275" />
+                    <line x1="660" y1="50" x2="660" y2="275" />
+                    <line x1="805" y1="50" x2="805" y2="275" />
+                    <line x1="950" y1="50" x2="950" y2="275" />
+                  </g>
+
+                  <!-- Safety Buffer Threshold (Dotted Line Across Middle) -->
+                  <line id="buffer-threshold-line" x1="80" y1="180" x2="950" y2="180" stroke-dasharray="5 5" />
+                  
+                  <!-- Text Annotation Layer pointing to Safety Buffer -->
+                  <g class="annotation-layer">
+                    <rect x="800" y="165" width="140" height="20" rx="3" fill="#ffffff" stroke="#dcdcdc" stroke-width="1" />
+                    <text x="810" y="179" class="annotation-text">[Safety Buffer Threshold]</text>
+                  </g>
+
+                  <!-- Axes Labels -->
+                  <text x="35" y="165" class="axis-title y-axis-title" transform="rotate(-90 35 165)">Units Remaining</text>
+                  <text x="515" y="315" class="axis-title x-axis-title">Timeline (12h to 72h)</text>
+
+                  <!-- Y-Axis Labels -->
+                  <text x="70" y="54" class="tick-label label-y">4,000</text>
+                  <text x="70" y="129" class="tick-label label-y">2,500</text>
+                  <text x="70" y="204" class="tick-label label-y">1,000</text>
+                  <text x="70" y="279" class="tick-label label-y">0</text>
+
+                  <!-- X-Axis Labels -->
+                  <text x="80" y="295" class="tick-label label-x">Arrival</text>
+                  <text x="225" y="295" class="tick-label label-x">12h</text>
+                  <text x="370" y="295" class="tick-label label-x">24h</text>
+                  <text x="515" y="295" class="tick-label label-x">36h</text>
+                  <text x="660" y="295" class="tick-label label-x">48h</text>
+                  <text x="805" y="295" class="tick-label label-x">60h</text>
+                  <text x="950" y="295" class="tick-label label-x">72h</text>
+                  
+                  <!-- Dynamic SVG Paths will go here -->
+                  <g id="chart-paths-container"></g>
+                  
+                  <!-- Interactivity Overlays / Tooltips -->
+                  <g id="chart-dots-container"></g>
+                </svg>
+                <div class="chart-tooltip" id="chart-tooltip"></div>
+              </div>
+            </div>
+          </section>
+          
+          <!-- Row C: Actionable Packing Manifest -->
+          <section class="dashboard-row row-manifest" id="row-manifest">
+            <div class="manifest-container-box">
+              <div class="manifest-header">
+                <h2 class="section-title">Actionable Packing Manifest</h2>
+                <div class="manifest-badge">Calculated Dispatch Recommendations</div>
+              </div>
+              
+              <!-- 4-Column Data Grid / Table -->
+              <div class="table-wrapper">
+                <table class="manifest-table" id="manifest-table">
+                  <thead>
+                    <tr>
+                      <th class="col-item">Relief Item</th>
+                      <th class="col-demand">72H Demand</th>
+                      <th class="col-stock">On-Site Stock</th>
+                      <th class="col-dispatch highlight-column">Recommended Dispatch Quantity</th>
+                    </tr>
+                  </thead>
+                  <tbody id="manifest-table-body">
+                    <!-- Rows will be injected and updated dynamically by JS -->
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+        </main>
+        
+      </div>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
