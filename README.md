@@ -46,3 +46,15 @@ The application is built to fit a **Standard 16:9 Desktop Presentation Frame ($1
 Simply open the file directly in any modern desktop web browser:
 1. Double-click `index.html` or open it via file path.
 2. For local hosting: run any basic HTTP server (e.g. `npx serve .` or `python -m http.server`).
+
+## ☁️ Deploying to Vercel
+
+To host this project on Vercel, configure the following settings in your Vercel Project Dashboard:
+
+- **Framework Preset**: `Other` (Vercel automatically detects this for static HTML/CSS/JS applications)
+- **Root Directory**: `./` (leave as default)
+- **Build Command**: *Leave empty* (no build commands are necessary as this uses pure client-side assets)
+- **Output Directory**: *Leave empty* (serves files directly from the root repository directory)
+
+> [!NOTE]
+> The included `vercel.json` file automatically configures Vercel to serve the application with clean URLs.
