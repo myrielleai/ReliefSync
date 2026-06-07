@@ -15,8 +15,8 @@
   --color-btn-hover: #000000;
   
   /* Single Accent Color for Alerts */
-  --color-accent-red: #d32f2f;
-  --color-accent-red-bg: #ffebee;
+  --color-accent-red: #ff4b4b; /* Vibrant Alert Red */
+  --color-accent-red-bg: #ffebeb;
   
   /* Fonts */
   --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
@@ -353,15 +353,15 @@ body {
   text-transform: uppercase;
   color: var(--color-text-secondary);
   letter-spacing: 1px;
-  margin-bottom: 8px;
+  margin-bottom: 12px; /* Extra margin for layout separation */
 }
 
 .card-value {
   font-family: var(--font-sans);
-  font-size: 28px;
+  font-size: 32px;
   font-weight: 800;
   color: var(--color-text-primary);
-  margin-bottom: 4px;
+  margin-bottom: 6px;
 }
 
 .card-indicator {
@@ -461,8 +461,8 @@ body {
 }
 
 #buffer-threshold-line {
-  stroke: var(--color-text-muted);
-  stroke-width: 1.5px;
+  stroke: var(--color-accent-red); /* Updated to Red Accent color */
+  stroke-width: 2px;
 }
 
 .axis-title {
@@ -502,23 +502,23 @@ body {
   transition: opacity var(--transition-normal);
 }
 
-/* Specific Line Styling */
+/* Specific Line Styling: Water (Blue), Rice (Brown) */
 .path-water {
-  stroke: #1c1c1e; /* Darkest gray */
+  stroke: #0066cc; /* Vibrant Blue */
 }
 .area-water {
   fill: url(#gradient-water);
 }
 
 .path-rice {
-  stroke: #636366; /* Medium gray */
+  stroke: #8b5a2b; /* Professional Brown */
 }
 .area-rice {
   fill: url(#gradient-rice);
 }
 
 .path-medical {
-  stroke: #aeaeb2; /* Light gray */
+  stroke: #8e8e93; /* Grayscale/Muted Gray */
 }
 .area-medical {
   fill: url(#gradient-medical);
@@ -538,7 +538,7 @@ body {
 .annotation-text {
   font-size: 10px;
   font-weight: 700;
-  fill: var(--color-text-primary);
+  fill: var(--color-accent-red); /* Highlight text in Alert Red */
   text-anchor: middle;
 }
 
@@ -676,32 +676,32 @@ body {
   text-align: right;
 }
 
-/* Distinct Highlight / Border behind recommended column */
+/* Distinct Highlight / Border behind RECOMMENDED DISPATCH QUANTITY column */
 .highlight-column {
-  background-color: var(--color-fill-light);
-  border-left: 1px solid var(--color-border-medium);
-  border-right: 1px solid var(--color-border-medium);
+  background-color: #f7f7fa; /* Light structural background tint */
+  border-left: 2px solid var(--color-btn-primary) !important; /* Bold border highlight to anchor eyes */
+  border-right: 2px solid var(--color-btn-primary) !important;
 }
 
 tbody td.highlight-column {
   font-size: 15px;
   font-weight: 700;
   color: var(--color-text-primary);
-  border-left: 1px solid var(--color-border-medium);
-  border-right: 1px solid var(--color-border-medium);
-  background-color: var(--color-fill-light);
+  border-left: 2px solid var(--color-btn-primary) !important;
+  border-right: 2px solid var(--color-btn-primary) !important;
+  background-color: #f7f7fa;
   transition: background-color var(--transition-fast);
 }
 
 tbody tr:hover td.highlight-column {
-  background-color: var(--color-fill-hover);
+  background-color: #ececef;
 }
 
 thead th.highlight-column {
-  border-left: 1px solid var(--color-border-medium);
-  border-right: 1px solid var(--color-border-medium);
-  border-top: 1px solid var(--color-border-medium);
-  background-color: var(--color-fill-light);
+  border-left: 2px solid var(--color-btn-primary) !important;
+  border-right: 2px solid var(--color-btn-primary) !important;
+  border-top: 2px solid var(--color-btn-primary) !important;
+  background-color: #f7f7fa;
   text-align: right;
 }
 

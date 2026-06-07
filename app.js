@@ -1,6 +1,6 @@
 /**
  * ReliefSync — Disaster Logistics Engine
- * Interactive Dashboard Logic
+ * Interactive Dashboard Logic (Refined Blueprint Specifications)
  */
 
 // --- 1. Viewport scaling to lock 16:9 Presentation Frame ---
@@ -25,44 +25,44 @@ window.addEventListener('DOMContentLoaded', () => {
 const database = {
   brgy_172: {
     name: "Brgy. 172 Covered Court",
-    population: "1,250 Evacuees",
+    population: "1,250",
     alertLevel: "CRITICAL",
     dispatchWindow: "Within 4 Hours",
     maxChartVal: 4000,
     yTicks: ["4,000", "2,500", "1,000", "0"],
-    bufferVal: 1688, // Maps to Y = 180
+    bufferVal: 1688,
     items: {
       water: {
         name: "💧 Bottled Water (1L)",
         demand: "3,750 Units",
         stock: "800 Units",
         recommended: "➕ 2,950 Units",
-        chartPoints: [3500, 2800, 2100, 1500, 1000, 600, 400] // Dips below buffer (1688) around 36h
+        chartPoints: [3500, 2800, 2100, 1500, 1000, 600, 400] // Dips below buffer around 36h
       },
       rice: {
         name: "🌾 Rice (5KG Packs)",
         demand: "1,250 Packs",
         stock: "400 Packs",
         recommended: "➕ 850 Packs",
-        chartPoints: [1200, 1050, 850, 700, 550, 420, 300] // Dips below buffer (500) around 54h
+        chartPoints: [1200, 1050, 850, 700, 550, 420, 300] // Dips below buffer around 54h
       },
       medical: {
-        name: "➕ Medical Kits",
+        name: "🩹 Medical Kits",
         demand: "500 Kits",
         stock: "150 Kits",
         recommended: "➕ 350 Units",
-        chartPoints: [480, 400, 350, 280, 210, 180, 120] // Buffer ~ 200
+        chartPoints: [480, 400, 350, 280, 210, 180, 120]
       }
     }
   },
   brgy_173: {
     name: "Brgy. 173 Gymnasium",
-    population: "850 Evacuees",
+    population: "850",
     alertLevel: "WARNING",
     dispatchWindow: "Within 12 Hours",
     maxChartVal: 3000,
     yTicks: ["3,000", "2,000", "1,000", "0"],
-    bufferVal: 1266, // Maps to Y = 180
+    bufferVal: 1266,
     items: {
       water: {
         name: "💧 Bottled Water (1L)",
@@ -79,7 +79,7 @@ const database = {
         chartPoints: [850, 750, 650, 580, 500, 420, 350]
       },
       medical: {
-        name: "➕ Medical Kits",
+        name: "🩹 Medical Kits",
         demand: "340 Kits",
         stock: "200 Kits",
         recommended: "➕ 140 Units",
@@ -89,19 +89,19 @@ const database = {
   },
   brgy_174: {
     name: "Brgy. 174 Elementary School",
-    population: "1,900 Evacuees",
+    population: "1,900",
     alertLevel: "CRITICAL",
     dispatchWindow: "Immediate (2h)",
     maxChartVal: 6000,
     yTicks: ["6,000", "4,000", "2,000", "0"],
-    bufferVal: 2533, // Maps to Y = 180
+    bufferVal: 2533,
     items: {
       water: {
         name: "💧 Bottled Water (1L)",
         demand: "5,700 Units",
         stock: "900 Units",
         recommended: "➕ 4,800 Units",
-        chartPoints: [5500, 4300, 3100, 2100, 1400, 800, 450] // Dips below buffer early
+        chartPoints: [5500, 4300, 3100, 2100, 1400, 800, 450]
       },
       rice: {
         name: "🌾 Rice (5KG Packs)",
@@ -111,7 +111,7 @@ const database = {
         chartPoints: [1800, 1500, 1200, 900, 650, 450, 320]
       },
       medical: {
-        name: "➕ Medical Kits",
+        name: "🩹 Medical Kits",
         demand: "760 Kits",
         stock: "300 Kits",
         recommended: "➕ 460 Units",
@@ -121,11 +121,11 @@ const database = {
   }
 };
 
-// Colors matching the grayscale hierarchy
+// Colors matching the required specification palette
 const categoryColors = {
-  water: { stroke: "#1c1c1e", label: "Bottled Water", areaClass: "area-water", pathClass: "path-water" },
-  rice: { stroke: "#636366", label: "Rice Packs", areaClass: "area-rice", pathClass: "path-rice" },
-  medical: { stroke: "#aeaeb2", label: "Medical Kits", areaClass: "area-medical", pathClass: "path-medical" }
+  water: { stroke: "#0066cc", label: "Bottled Water", areaClass: "area-water", pathClass: "path-water" }, // Blue
+  rice: { stroke: "#8b5a2b", label: "Rice Packs", areaClass: "area-rice", pathClass: "path-rice" },    // Brown
+  medical: { stroke: "#8e8e93", label: "Medical Kits", areaClass: "area-medical", pathClass: "path-medical" } // Gray
 };
 
 // X Coordinates for the 7 timeline milestones on the SVG (0h, 12h, 24h, 36h, 48h, 60h, 72h)
@@ -141,12 +141,12 @@ function renderDashboard(data, activeCategories) {
   const alertVal = document.getElementById('val-alert');
   alertVal.textContent = data.alertLevel;
   
-  // Dynamic Alert colors based on value (single accent color)
+  // Dynamic Alert colors based on value (single accent color #FF4B4B)
   if (data.alertLevel === "CRITICAL") {
     alertVal.style.color = "var(--color-accent-red)";
     alertCard.style.borderLeft = "4px solid var(--color-accent-red)";
   } else {
-    alertVal.style.color = "#FF9500"; // Warning Orange for WARNING alert level
+    alertVal.style.color = "#FF9500"; // Warning Orange
     alertCard.style.borderLeft = "4px solid #FF9500";
   }
   
@@ -260,7 +260,7 @@ function renderChart(data, activeCategories) {
 }
 
 
-// --- 5. Render packing Manifest Table ---
+// --- 5. Render Packing Manifest Table ---
 function renderTable(data, activeCategories) {
   const tbody = document.getElementById('manifest-table-body');
   tbody.innerHTML = '';
