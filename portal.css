@@ -584,6 +584,24 @@ body {
   margin-bottom: 12px;
 }
 
+.warehouse-link-btn {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #0066cc;
+  text-decoration: none;
+  border: 1px solid #0066cc;
+  padding: 6px 12px;
+  border-radius: 4px;
+  transition: all var(--transition-fast);
+  letter-spacing: 0.5px;
+}
+
+.warehouse-link-btn:hover {
+  background-color: rgba(0, 102, 204, 0.05);
+  transform: translateY(-1px);
+}
+
 .manifest-badge {
   background-color: var(--color-fill-light);
   color: var(--color-text-primary);
