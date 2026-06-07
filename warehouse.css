@@ -422,3 +422,8 @@ body {
   transform: translateY(0);
   box-shadow: none;
 }
+
+/* Global utility classes */
+.hidden {
+  display: none !important;
+}
