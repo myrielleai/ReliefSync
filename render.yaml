@@ -20,9 +20,8 @@ services:
 
     # Build command: install dependencies + train the ML model
     # (relief_model.pkl is in .gitignore so we must generate it at build time)
-    buildCommand: |
-      pip install -r requirements.txt
-      cd .. && python model_training/train_model.py
+    # NOTE: rootDir is 'backend', so ../model_training reaches the model folder
+    buildCommand: pip install -r requirements.txt && python ../model_training/train_model.py
 
     # Start the Flask server. Render injects the PORT environment variable.
     startCommand: python app.py

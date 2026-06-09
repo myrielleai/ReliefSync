@@ -74,9 +74,9 @@ const database = {
 
 // Chart line colors
 const categoryColors = {
-  water:   { stroke: "#0066cc", label: "Bottled Water", areaClass: "area-water",   pathClass: "path-water" },
-  rice:    { stroke: "#8b5a2b", label: "Rice Packs",    areaClass: "area-rice",    pathClass: "path-rice" },
-  medical: { stroke: "#e74c3c", label: "Medical Kits",  areaClass: "area-medical", pathClass: "path-medical" }
+  water: { stroke: "#0066cc", label: "Bottled Water", areaClass: "area-water", pathClass: "path-water" },
+  rice: { stroke: "#8b5a2b", label: "Rice Packs", areaClass: "area-rice", pathClass: "path-rice" },
+  medical: { stroke: "#e74c3c", label: "Medical Kits", areaClass: "area-medical", pathClass: "path-medical" }
 };
 
 // X coordinates for the 7 timeline points on the SVG chart
@@ -88,7 +88,7 @@ const timeLabels = ["Arrival", "12h", "24h", "36h", "48h", "60h", "72h"];
 // SECTION 2: ML BACKEND CONFIGURATION
 // ==============================================================================
 
-const ML_API_BASE_URL = "http://127.0.0.1:5000";
+const ML_API_BASE_URL = "https://reliefsync-qlev.onrender.com";
 
 
 // ==============================================================================
@@ -120,10 +120,10 @@ function formatNum(n) {
 
 async function fetchPrediction(campData, itemType) {
   const requestPayload = {
-    camp_id:       campData.campId,
-    population:    campData.population,
+    camp_id: campData.campId,
+    population: campData.population,
     pagasa_signal: campData.pagasaSignal,
-    item_type:     itemType
+    item_type: itemType
   };
 
   try {
@@ -160,16 +160,16 @@ function renderDashboard(campData, mlResults, activeCategories) {
   // Coverage ratio = (total current stock) / (total predicted 72h demand)
   // < 30% → CRITICAL | 30-60% → WARNING | > 60% → STABLE
   let totalDemand = 0;
-  let totalStock  = 0;
+  let totalStock = 0;
   activeCategories.forEach(cat => {
     totalDemand += (mlResults[cat] || 0);
-    totalStock  += (campData.stock[cat] || 0);
+    totalStock += (campData.stock[cat] || 0);
   });
 
   const coverageRatio = totalDemand === 0 ? 1 : totalStock / totalDemand;
 
-  const alertCard      = document.getElementById('card-alert');
-  const alertVal       = document.getElementById('val-alert');
+  const alertCard = document.getElementById('card-alert');
+  const alertVal = document.getElementById('val-alert');
   const alertIndicator = document.getElementById('alert-indicator-text');
 
   // Remove any previously applied border-left style
@@ -179,24 +179,24 @@ function renderDashboard(campData, mlResults, activeCategories) {
   let computedAlertLevel, alertColor, alertIndicatorMsg;
 
   if (coverageRatio < 0.30) {
-    computedAlertLevel  = "CRITICAL";
-    alertColor          = "#ff4b4b";  // red
-    alertIndicatorMsg   = "Immediate Dispatch Required";
+    computedAlertLevel = "CRITICAL";
+    alertColor = "#ff4b4b";  // red
+    alertIndicatorMsg = "Immediate Dispatch Required";
     alertCard.classList.add('highlight-alert-critical');
   } else if (coverageRatio < 0.60) {
-    computedAlertLevel  = "WARNING";
-    alertColor          = "#FF9500";  // orange
-    alertIndicatorMsg   = "Dispatch Recommended Soon";
+    computedAlertLevel = "WARNING";
+    alertColor = "#FF9500";  // orange
+    alertIndicatorMsg = "Dispatch Recommended Soon";
     alertCard.classList.add('highlight-alert-warning');
   } else {
-    computedAlertLevel  = "STABLE";
-    alertColor          = "#34C759";  // green
-    alertIndicatorMsg   = "Stocks Sufficient for 72h";
+    computedAlertLevel = "STABLE";
+    alertColor = "#34C759";  // green
+    alertIndicatorMsg = "Stocks Sufficient for 72h";
     alertCard.classList.add('highlight-alert-stable');
   }
 
-  alertVal.textContent       = computedAlertLevel;
-  alertVal.style.color       = alertColor;
+  alertVal.textContent = computedAlertLevel;
+  alertVal.style.color = alertColor;
   if (alertIndicator) alertIndicator.textContent = alertIndicatorMsg;
 
   // --- Update Dispatch Window Card ---
@@ -273,22 +273,22 @@ function buildChartItems(campData, mlResults, activeCategories) {
 // ==============================================================================
 
 function renderChart(maxVal, chartItems, activeCategories) {
-  const pathsContainer  = document.getElementById('chart-paths-container');
-  const dotsContainer   = document.getElementById('chart-dots-container');
+  const pathsContainer = document.getElementById('chart-paths-container');
+  const dotsContainer = document.getElementById('chart-dots-container');
   const legendContainer = document.getElementById('chart-legend');
 
-  pathsContainer.innerHTML  = '';
-  dotsContainer.innerHTML   = '';
+  pathsContainer.innerHTML = '';
+  dotsContainer.innerHTML = '';
   legendContainer.innerHTML = '';
 
   activeCategories.forEach(cat => {
     if (!chartItems[cat]) return;
 
-    const itemData  = chartItems[cat];
+    const itemData = chartItems[cat];
     const colorSpec = categoryColors[cat];
 
     // Add legend item
-    const legendItem     = document.createElement('div');
+    const legendItem = document.createElement('div');
     legendItem.className = 'legend-item';
     legendItem.innerHTML = `
       <div class="legend-color" style="background-color: ${colorSpec.stroke}"></div>
@@ -323,12 +323,12 @@ function renderChart(maxVal, chartItems, activeCategories) {
     lineEl.setAttribute('class', `chart-path ${colorSpec.pathClass}`);
     lineEl.setAttribute('stroke', colorSpec.stroke);
     const lineLen = 1000;
-    lineEl.style.strokeDasharray  = lineLen;
+    lineEl.style.strokeDasharray = lineLen;
     lineEl.style.strokeDashoffset = lineLen;
     pathsContainer.appendChild(lineEl);
 
     setTimeout(() => {
-      lineEl.style.transition       = 'stroke-dashoffset 1.5s ease-in-out';
+      lineEl.style.transition = 'stroke-dashoffset 1.5s ease-in-out';
       lineEl.style.strokeDashoffset = '0';
     }, 50);
 
@@ -375,9 +375,9 @@ function renderTable(campData, mlResults, activeCategories) {
   }
 
   const categoryDisplayInfo = {
-    water:   { icon: "", name: "Bottled Water (1L)", unit: "units" },
-    rice:    { icon: "", name: "Rice (5KG Sacks)",   unit: "sacks" },
-    medical: { icon: "", name: "Medical Kits",       unit: "kits"  }
+    water: { icon: "", name: "Bottled Water (1L)", unit: "units" },
+    rice: { icon: "", name: "Rice (5KG Sacks)", unit: "sacks" },
+    medical: { icon: "", name: "Medical Kits", unit: "kits" }
   };
 
   let anyRows = false;
@@ -391,21 +391,21 @@ function renderTable(campData, mlResults, activeCategories) {
     }
 
     anyRows = true;
-    const info        = categoryDisplayInfo[cat];
-    const stock       = campData.stock[cat] || 0;
-    const dispatch    = Math.max(0, demand - stock);
+    const info = categoryDisplayInfo[cat];
+    const stock = campData.stock[cat] || 0;
+    const dispatch = Math.max(0, demand - stock);
 
     // Coverage = what % of the 72h demand is already on site
     const coveragePct = demand === 0 ? 100 : Math.min(100, Math.round((stock / demand) * 100));
     let barClass = "stable";
-    if (coveragePct < 30)      barClass = "critical";
+    if (coveragePct < 30) barClass = "critical";
     else if (coveragePct < 60) barClass = "warning";
 
     // Dispatch urgency label
     let urgencyLabel = "";
-    if (dispatch === 0)       urgencyLabel = `<span style="color:#34C759;font-weight:700;">Sufficient</span>`;
+    if (dispatch === 0) urgencyLabel = `<span style="color:#34C759;font-weight:700;">Sufficient</span>`;
     else if (coveragePct < 30) urgencyLabel = `<span style="color:#ff4b4b;font-weight:700;">URGENT</span>`;
-    else                       urgencyLabel = `<span style="color:#FF9500;font-weight:700;">NEEDED</span>`;
+    else urgencyLabel = `<span style="color:#FF9500;font-weight:700;">NEEDED</span>`;
 
     const row = document.createElement('tr');
     row.style.animationDelay = `${index * 0.1}s`;
@@ -451,12 +451,12 @@ const tooltip = document.getElementById('chart-tooltip');
 
 function showTooltip(e, x, y, label, val, time) {
   const wrapper = document.getElementById('svg-wrapper');
-  const rect    = wrapper.getBoundingClientRect();
-  const scale   = rect.width / 1000;
-  tooltip.innerHTML     = `<strong>${label}</strong><br>At ${time}: ${formatNum(val)} units remain`;
+  const rect = wrapper.getBoundingClientRect();
+  const scale = rect.width / 1000;
+  tooltip.innerHTML = `<strong>${label}</strong><br>At ${time}: ${formatNum(val)} units remain`;
   tooltip.style.opacity = '1';
-  tooltip.style.left    = `${x * scale}px`;
-  tooltip.style.top     = `${y * scale}px`;
+  tooltip.style.left = `${x * scale}px`;
+  tooltip.style.top = `${y * scale}px`;
 }
 
 function hideTooltip() {
@@ -469,10 +469,10 @@ function hideTooltip() {
 // ==============================================================================
 
 let lastMLResults = {};
-let lastCampData  = null;
+let lastCampData = null;
 
-const btnInsights     = document.getElementById('btn-ml-insights');
-const modalInsights   = document.getElementById('modal-insights');
+const btnInsights = document.getElementById('btn-ml-insights');
+const modalInsights = document.getElementById('modal-insights');
 const btnCloseInsights = document.getElementById('btn-close-insights');
 const insightsContent = document.getElementById('insights-content');
 
@@ -506,14 +506,14 @@ function renderInsightsModal() {
   // units = m1*camp_id + m2*supply_cat_id + m3*population + m4*pagasa_signal + bias
   // Approximate coefficients from training run:
   const COEFFICIENTS = {
-    population:    1.84,   // per person
+    population: 1.84,   // per person
     pagasa_signal: 308.4,  // per signal level
-    bias:          6405.0
+    bias: 6405.0
   };
 
-  const signal    = lastCampData.pagasaSignal;
-  const pop       = lastCampData.population;
-  const campId    = lastCampData.campId;
+  const signal = lastCampData.pagasaSignal;
+  const pop = lastCampData.population;
+  const campId = lastCampData.campId;
 
   let html = `
     <div style="margin-bottom:16px;padding:12px;background:#fff3cd;border-radius:8px;border-left:4px solid #FF9500;">
@@ -526,9 +526,9 @@ function renderInsightsModal() {
   const catLabels = { water: 'Water', rice: 'Rice', medical: 'Medicine' };
 
   Object.keys(lastMLResults).forEach(cat => {
-    const predicted    = lastMLResults[cat];
+    const predicted = lastMLResults[cat];
     const baseFallback = computeFallback(pop, cat);
-    const signalBonus  = predicted - baseFallback;
+    const signalBonus = predicted - baseFallback;
 
     html += `
       <div style="margin-bottom:18px;padding:15px;background:var(--color-fill-light);border-radius:8px;">
@@ -569,9 +569,9 @@ function renderInsightsModal() {
 // SECTION 8: DATASET TRANSPARENCY MODAL
 // ==============================================================================
 
-const btnDataset       = document.getElementById('btn-view-dataset');
-const modalDataset     = document.getElementById('modal-dataset');
-const btnCloseDataset  = document.getElementById('btn-close-dataset');
+const btnDataset = document.getElementById('btn-view-dataset');
+const modalDataset = document.getElementById('modal-dataset');
+const btnCloseDataset = document.getElementById('btn-close-dataset');
 
 if (btnDataset) {
   btnDataset.addEventListener('click', () => {
@@ -594,8 +594,8 @@ if (modalDataset) {
 // SECTION 9: HOW TO USE GUIDE MODAL
 // ==============================================================================
 
-const btnGuide      = document.getElementById('btn-open-guide');
-const modalGuide    = document.getElementById('modal-guide');
+const btnGuide = document.getElementById('btn-open-guide');
+const modalGuide = document.getElementById('modal-guide');
 const btnCloseGuide = document.getElementById('btn-close-guide');
 
 if (btnGuide) {
@@ -620,13 +620,13 @@ if (modalGuide) {
 // ==============================================================================
 
 const btnGenerate = document.getElementById('btn-generate-forecast');
-const btnContent  = btnGenerate.querySelector('.btn-content');
-const btnLoader   = btnGenerate.querySelector('.btn-loader');
+const btnContent = btnGenerate.querySelector('.btn-content');
+const btnLoader = btnGenerate.querySelector('.btn-loader');
 
 btnGenerate.addEventListener('click', () => generateForecast(false));
 
 async function generateForecast(immediate = false) {
-  const selectedCenter   = document.getElementById('evac-center-select').value;
+  const selectedCenter = document.getElementById('evac-center-select').value;
   const activeCategories = Array.from(
     document.querySelectorAll('input[name="categories"]:checked')
   ).map(el => el.value);
@@ -641,7 +641,7 @@ async function generateForecast(immediate = false) {
     });
     renderDashboard(campData, quickResults, activeCategories);
     lastMLResults = quickResults;
-    lastCampData  = campData;
+    lastCampData = campData;
     // Silently upgrade to ML results
     fetchAndRender(campData, activeCategories, false);
     return;
@@ -657,13 +657,13 @@ async function fetchAndRender(campData, activeCategories, showLoader) {
     btnGenerate.disabled = true;
     btnContent.classList.add('hidden');
     btnLoader.classList.remove('hidden');
-    mainWorkspace.style.opacity    = '0.4';
+    mainWorkspace.style.opacity = '0.4';
     mainWorkspace.style.transition = 'opacity 0.3s ease';
   }
 
   try {
     const predictionPromises = activeCategories.map(cat => fetchPrediction(campData, cat));
-    const predictionValues   = await Promise.all(predictionPromises);
+    const predictionValues = await Promise.all(predictionPromises);
 
     const mlResults = {};
     activeCategories.forEach((cat, idx) => {
@@ -676,7 +676,7 @@ async function fetchAndRender(campData, activeCategories, showLoader) {
 
     renderDashboard(campData, mlResults, activeCategories);
     lastMLResults = mlResults;
-    lastCampData  = campData;
+    lastCampData = campData;
 
   } catch (err) {
     console.error("Unexpected error:", err);
@@ -684,7 +684,7 @@ async function fetchAndRender(campData, activeCategories, showLoader) {
     activeCategories.forEach(cat => { fallback[cat] = computeFallback(campData.population, cat); });
     renderDashboard(campData, fallback, activeCategories);
     lastMLResults = fallback;
-    lastCampData  = campData;
+    lastCampData = campData;
 
   } finally {
     if (showLoader) {
