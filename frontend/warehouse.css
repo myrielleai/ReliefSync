@@ -78,6 +78,7 @@ body {
   margin: 0 auto;
 }
 
+/* KANBAN BOARD STYLES */
 .checklist-header {
   font-size: 28px;
   font-weight: 900;
@@ -88,139 +89,76 @@ body {
   padding-bottom: 10px;
 }
 
-.checklist-grid {
+.kanban-board {
   display: flex;
-  flex-direction: column;
-  gap: 24px;
+  gap: 30px;
+  min-height: 500px;
 }
 
-.checklist-row {
-  display: grid;
-  grid-template-columns: 80px 1fr 180px;
-  align-items: center;
-  padding: 30px;
+.kanban-column {
+  flex: 1;
+  background-color: #f5f5f5;
   border: var(--border-width-heavy) solid var(--color-border-thick);
   border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+}
+
+.kanban-title {
+  padding: 20px;
+  font-size: 20px;
+  font-weight: 900;
+  text-align: center;
+  border-bottom: var(--border-width-medium) solid var(--color-border-thick);
   background-color: #ffffff;
-  cursor: pointer;
-  user-select: none;
-  transition: all 0.1s ease-in-out;
+  border-radius: 4px 4px 0 0;
 }
 
-.checklist-row:hover {
-  background-color: #f5f5f5;
-  transform: translateY(-2px);
-  box-shadow: 0 8px 0 #000000;
+.kanban-dropzone {
+  flex-grow: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  transition: background-color 0.2s ease;
 }
 
-.checklist-row:active {
-  transform: translateY(0);
-  box-shadow: none;
+.kanban-dropzone.drag-over {
+  background-color: #e2e2e2;
 }
 
-/* Huge Custom Checkbox */
-.row-checkbox-wrapper {
-  position: relative;
-  width: 50px;
-  height: 50px;
-}
-
-.huge-checkbox {
-  position: absolute;
-  opacity: 0;
-  cursor: pointer;
-  height: 0;
-  width: 0;
-}
-
-.custom-huge-box {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 50px;
-  height: 50px;
+.kanban-card {
   background-color: #ffffff;
   border: var(--border-width-heavy) solid var(--color-border-thick);
   border-radius: 6px;
-  transition: all 0.1s ease;
+  padding: 20px;
+  cursor: grab;
+  user-select: none;
+  box-shadow: 0 4px 0 #000000;
+  transition: transform 0.1s ease;
 }
 
-.checklist-row input:checked ~ .custom-huge-box {
-  background-color: #000000;
+.kanban-card:active {
+  cursor: grabbing;
+  transform: translateY(2px);
+  box-shadow: 0 2px 0 #000000;
 }
 
-.custom-huge-box:after {
-  content: "";
-  position: absolute;
-  display: none;
-  left: 14px;
-  top: 6px;
-  width: 12px;
-  height: 24px;
-  border: solid white;
-  border-width: 0 5px 5px 0;
-  transform: rotate(45deg);
-}
-
-.checklist-row input:checked ~ .custom-huge-box:after {
-  display: block;
-}
-
-/* Item details text sizes */
-.row-text {
-  padding-left: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
+.kanban-card.dragging {
+  opacity: 0.5;
 }
 
 .item-name {
-  font-size: 24px;
+  font-size: 18px;
   font-weight: 800;
-  letter-spacing: -0.5px;
+  display: block;
+  margin-bottom: 8px;
 }
 
 .load-quantity {
-  font-size: 36px;
+  font-size: 24px;
   font-weight: 900;
   color: var(--color-text-dark);
-}
-
-/* Checklist Row Checked States */
-.checklist-row.checked-row {
-  border-color: var(--color-border-thick);
-  background-color: #f9f9fb;
-}
-
-.checklist-row.checked-row .item-name {
-  text-decoration: line-through;
-  color: var(--color-text-muted);
-}
-
-.checklist-row.checked-row .load-quantity {
-  text-decoration: line-through;
-  color: var(--color-text-muted);
-}
-
-/* Status Tags */
-.row-status-tag {
-  font-size: 18px;
-  font-weight: 900;
-  letter-spacing: 0.5px;
-  text-transform: uppercase;
-  padding: 10px 15px;
-  text-align: center;
-  border: var(--border-width-medium) solid var(--color-border-thick);
-  border-radius: 4px;
-  background-color: #ffffff;
-  color: #000000;
-  transition: all 0.1s ease;
-}
-
-.checklist-row.checked-row .row-status-tag {
-  background-color: var(--color-success-bg);
-  border-color: var(--color-success-green);
-  color: var(--color-success-green);
 }
 
 

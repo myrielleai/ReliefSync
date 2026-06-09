@@ -319,11 +319,11 @@ body {
   width: 100%;
 }
 
-/* ROW A: Live Camp Status */
+/* ROW A: Live Camp Status — now 4 cards */
 .row-status {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 24px;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
 }
 
 .status-card {
@@ -368,16 +368,31 @@ body {
   color: var(--color-text-muted);
 }
 
+/* Remove the old hardcoded single red highlight-alert */
 .status-card.highlight-alert {
-  border-left: 4px solid var(--color-accent-red);
+  border-left: 4px solid var(--color-border-medium);
+}
+
+/* Dynamic alert classes set by JS */
+.status-card.highlight-alert-critical {
+  border-left: 4px solid #ff4b4b;
+  background: linear-gradient(135deg, #fff5f5 0%, #ffffff 50%);
+}
+.status-card.highlight-alert-warning {
+  border-left: 4px solid #FF9500;
+  background: linear-gradient(135deg, #fff8f0 0%, #ffffff 50%);
+}
+.status-card.highlight-alert-stable {
+  border-left: 4px solid #34C759;
+  background: linear-gradient(135deg, #f0fff4 0%, #ffffff 50%);
 }
 
 .alert-text {
-  color: var(--color-accent-red) !important;
   font-weight: 800;
   display: flex;
   align-items: center;
   gap: 6px;
+  /* color is set dynamically via JS style.color */
 }
 
 
@@ -412,6 +427,16 @@ body {
   font-size: 15px;
   font-weight: 700;
   color: var(--color-text-primary);
+  margin-bottom: 4px;
+}
+
+.chart-subtitle,
+.manifest-subtitle {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  margin-bottom: 8px;
+  line-height: 1.5;
+  max-width: 600px;
 }
 
 .chart-legend {
@@ -662,18 +687,23 @@ body {
 }
 
 .col-item {
-  width: 30%;
+  width: 22%;
 }
 .col-demand,
 .col-stock {
-  width: 20%;
+  width: 14%;
   font-family: var(--font-mono);
 }
+.col-deficit {
+  width: 16%;
+}
 .col-dispatch {
-  width: 30%;
+  width: 28%;
   font-family: var(--font-mono);
   font-weight: 700;
   text-align: right;
+  line-height: 1.5;
+  padding: 12px 16px !important;
 }
 
 .highlight-column {
@@ -702,4 +732,320 @@ thead th.highlight-column {
   border-top: 2px solid var(--color-btn-primary) !important;
   background-color: #f7f7fa;
   text-align: right;
+}
+
+/* NEW STYLES: Crisis Banner */
+.crisis-banner {
+  width: 100%;
+  background-color: var(--color-accent-red);
+  color: white;
+  text-align: center;
+  padding: 10px;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: 0.5px;
+  z-index: 100;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.split-pane {
+  height: calc(100vh - 40px);
+}
+
+/* Secondary Button (ML Insights) */
+.secondary-btn {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--color-btn-primary);
+  background-color: white;
+  border: 1px solid var(--color-btn-primary);
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  letter-spacing: 0.5px;
+}
+.secondary-btn:hover {
+  background-color: var(--color-fill-hover);
+  transform: translateY(-1px);
+}
+
+/* Deficit Progress Bar */
+.col-deficit {
+  width: 15%;
+}
+.progress-bar-container {
+  width: 100%;
+  height: 8px;
+  background-color: var(--color-fill-hover);
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+}
+.progress-bar-fill {
+  height: 100%;
+  background-color: var(--color-btn-primary);
+  border-radius: 4px;
+  transition: width 1s ease-out, background-color 0.3s;
+}
+.progress-bar-fill.critical { background-color: var(--color-accent-red); }
+.progress-bar-fill.warning { background-color: #FF9500; }
+.progress-bar-fill.stable { background-color: #34C759; }
+
+.deficit-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  display: block;
+  margin-top: 4px;
+  text-align: right;
+}
+
+/* Modal Overlays */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 1;
+  transition: opacity 0.3s ease;
+}
+.modal-overlay.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+.modal-card {
+  background: white;
+  padding: 30px;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+  position: relative;
+  transform: translateY(0);
+  transition: transform 0.3s ease;
+}
+.modal-overlay.hidden .modal-card {
+  transform: translateY(20px);
+}
+.modal-close-btn {
+  position: absolute;
+  top: 15px; right: 15px;
+  background: none; border: none;
+  font-size: 18px; color: var(--color-text-muted);
+  cursor: pointer;
+}
+.modal-header { margin-bottom: 20px; }
+.modal-title { font-size: 20px; font-weight: 800; margin-bottom: 5px; }
+.modal-subtitle { font-size: 13px; color: var(--color-text-secondary); }
+
+.insights-content {
+  font-size: 13px;
+  line-height: 1.5;
+}
+.insight-row {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-fill-hover);
+}
+.insight-row:last-child { border-bottom: none; }
+.insight-label { font-weight: 600; color: var(--color-text-secondary); }
+.insight-value { font-family: var(--font-mono); font-weight: 700; }
+.insight-total {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--color-accent-red);
+  padding-top: 15px;
+  margin-top: 10px;
+  border-top: 2px solid var(--color-border-light);
+}
+
+/* ── Wide modal for dataset / ML insights ── */
+.modal-wide {
+  max-width: 680px;
+  max-height: 85vh;
+  overflow-y: auto;
+}
+
+/* ── Guide button in sidebar ── */
+.guide-btn {
+  width: 100%;
+  margin-bottom: 20px;
+  padding: 10px 14px;
+  font-family: var(--font-sans);
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: #0066cc;
+  background: #f0f7ff;
+  border: 1px solid #0066cc;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: left;
+  letter-spacing: 0.5px;
+}
+.guide-btn:hover {
+  background: #e0eeff;
+  transform: translateY(-1px);
+}
+
+/* ── Form hints (small helper text under labels) ── */
+.form-hint {
+  font-size: 11px;
+  color: var(--color-text-muted);
+  margin: -6px 0 6px 0;
+  line-height: 1.4;
+}
+
+/* ── Sidebar alert legend box ── */
+.legend-box {
+  background: var(--color-fill-light);
+  border: 1px solid var(--color-border-light);
+  border-radius: 8px;
+  padding: 14px;
+  margin-top: 10px;
+}
+.legend-title {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--color-text-secondary);
+  margin-bottom: 10px;
+}
+.legend-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  font-size: 11px;
+  color: var(--color-text-secondary);
+  margin-bottom: 8px;
+  line-height: 1.4;
+}
+.legend-row:last-child { margin-bottom: 0; }
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+/* ── Manifest header with actions row ── */
+.manifest-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+  gap: 12px;
+}
+.manifest-actions {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* ── Table small sub-headers ── */
+.manifest-table th small {
+  display: block;
+  font-size: 9px;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  color: var(--color-text-muted);
+  margin-top: 2px;
+}
+
+/* ── Dataset table inside modal ── */
+.dataset-section { margin-bottom: 16px; }
+.dataset-section h4 {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 8px;
+  color: var(--color-text-primary);
+}
+.dataset-section p {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  margin-bottom: 8px;
+}
+.dataset-list {
+  padding-left: 20px;
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  line-height: 1.8;
+}
+.dataset-list li { margin-bottom: 10px; }
+.dataset-link {
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 11px;
+  color: #0066cc;
+  text-decoration: none;
+  font-weight: 600;
+}
+.dataset-link:hover { text-decoration: underline; }
+
+.dataset-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11px;
+  margin-top: 8px;
+}
+.dataset-table th {
+  background: var(--color-fill-light);
+  padding: 8px 10px;
+  text-align: left;
+  font-weight: 700;
+  font-size: 10px;
+  text-transform: uppercase;
+  border-bottom: 2px solid var(--color-border-light);
+}
+.dataset-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--color-fill-hover);
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+/* ── Guide steps layout ── */
+.guide-step {
+  display: flex;
+  gap: 16px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--color-fill-hover);
+}
+.guide-step:last-child { border-bottom: none; }
+.guide-step-num {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--color-btn-primary);
+  color: white;
+  font-weight: 800;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.guide-step-body h4 {
+  font-size: 13px;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.guide-step-body p {
+  font-size: 12px;
+  color: var(--color-text-secondary);
+  line-height: 1.6;
 }

@@ -55,7 +55,7 @@ print("=" * 60)
 #   supply_category_id → What type of supply we're predicting for:
 #                          1 = Water, 2 = Rice, 3 = Medicine
 #   current_population → How many evacuees are currently in the camp
-#   weather_severity   → How bad is the typhoon? Scale of 1 (light) to 10 (catastrophic)
+#   pagasa_signal      → PAGASA Tropical Cyclone Wind Signal (1 to 5)
 #
 #   TARGET (y) — The thing we WANT TO PREDICT:
 #   ─────────────────────────────────────────────────────────────
@@ -90,9 +90,8 @@ for i in range(TRAINING_RECORDS):
     population = int(population_base + population_fluctuation + (camp_id * 150))
     population = max(300, min(3000, population))  # Clamp to realistic range
 
-    # Weather severity: 1-10 scale. We model it as cyclical (storms worsen and pass).
-    weather_severity = round(5 + 4 * math.sin(i * 0.08), 1)
-    weather_severity = max(1.0, min(10.0, weather_severity))
+    # PAGASA Signal: 1-5 scale (Signal No. 1 to Signal No. 5).
+    pagasa_signal = int(max(1, min(5, round(3 + 2 * math.sin(i * 0.08)))))
 
     # --- Compute the TARGET value (units_consumed) ---
     #
@@ -100,26 +99,25 @@ for i in range(TRAINING_RECORDS):
     #
     # WATER (supply_category_id == 1):
     #   Each person needs ~3 liters per day, so 9 liters over 72 hours.
-    #   But severe weather increases dehydration risk, so we multiply by weather factor.
-    #   Formula: population * 3.0 * (1 + weather_severity * 0.05)
-    #   → A camp of 1000 people in a severity-8 storm needs: 1000 * 3.0 * 1.40 = 4,200 units
+    #   Higher PAGASA signals mean destroyed water lines, increasing reliance on bottled water.
+    #   Formula: population * 3.0 * (1 + pagasa_signal * 0.15)
+    #   → A camp of 1000 people in a Signal 4 storm needs: 1000 * 3.0 * 1.60 = 4,800 units
     #
     # RICE (supply_category_id == 2):
     #   Each person needs ~1 rice pack per day = 3 packs over 72 hours.
-    #   Rice demand is slightly less affected by weather than water.
-    #   Formula: population * 1.0 * (1 + weather_severity * 0.02)
+    #   Formula: population * 1.0 * (1 + pagasa_signal * 0.05)
     #
     # MEDICINE (supply_category_id == 3):
-    #   Medicine is for treating the ~15% of evacuees who get sick (injuries, disease).
-    #   Severe weather worsens health conditions significantly.
-    #   Formula: population * 0.15 * (1 + weather_severity * 0.08)
+    #   Medicine is for treating the ~15% of evacuees who get sick (injuries, waterborne disease).
+    #   Severe weather (Signal 4/5) worsens health conditions significantly.
+    #   Formula: population * 0.15 * (1 + pagasa_signal * 0.25)
     #
     if supply_category_id == 1:   # Water
-        units_consumed = population * 3.0 * (1 + weather_severity * 0.05)
+        units_consumed = population * 3.0 * (1 + pagasa_signal * 0.15)
     elif supply_category_id == 2: # Rice
-        units_consumed = population * 1.0 * (1 + weather_severity * 0.02)
+        units_consumed = population * 1.0 * (1 + pagasa_signal * 0.05)
     else:                          # Medicine (supply_category_id == 3)
-        units_consumed = population * 0.15 * (1 + weather_severity * 0.08)
+        units_consumed = population * 0.15 * (1 + pagasa_signal * 0.25)
 
     # Add some realistic randomness (noise). In real life, data is never perfectly clean.
     # We add ±10% random variation to simulate unpredictable factors
@@ -135,7 +133,7 @@ for i in range(TRAINING_RECORDS):
         "camp_id": camp_id,
         "supply_category_id": supply_category_id,
         "current_population": population,
-        "weather_severity": weather_severity,
+        "pagasa_signal": pagasa_signal,
         "units_consumed": units_consumed
     })
 
@@ -165,7 +163,7 @@ print(df.describe())
 # ==============================================================================
 
 # X contains all our input features (the 4 columns the model will learn from)
-X = df[["camp_id", "supply_category_id", "current_population", "weather_severity"]]
+X = df[["camp_id", "supply_category_id", "current_population", "pagasa_signal"]]
 
 # y contains our target column (what we want the model to predict)
 y = df["units_consumed"]
@@ -226,7 +224,7 @@ print(f"   Test set:     {len(X_test)} records (20%)")
 # │    x₁ = camp_id                                                         │
 # │    x₂ = supply_category_id                                              │
 # │    x₃ = current_population                                              │
-# │    x₄ = weather_severity                                                │
+# │    x₄ = pagasa_signal                                                   │
 # │    m₁,m₂,m₃,m₄ = "weights" (how much each feature matters)            │
 # │    b = "bias" / intercept (baseline value when all features = 0)        │
 # │                                                                         │
@@ -297,7 +295,7 @@ print(f"   → Our model explains {r2 * 100:.1f}% of the variation in relief dem
 # Show the learned coefficients (the "m" values in our formula)
 # These tell us HOW MUCH each feature influences the prediction.
 print(f"\n🔍 What the model learned (feature coefficients):")
-feature_names = ["camp_id", "supply_category_id", "current_population", "weather_severity"]
+feature_names = ["camp_id", "supply_category_id", "current_population", "pagasa_signal"]
 for name, coef in zip(feature_names, model.coef_):
     print(f"   {name:25s}: {coef:+.4f}")
 print(f"   {'bias (intercept)':25s}: {model.intercept_:+.4f}")

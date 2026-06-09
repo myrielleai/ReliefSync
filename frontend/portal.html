@@ -5,80 +5,110 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ReliefSync Dashboard — Predictive Supply Forecaster</title>
   <meta name="description" content="AI-driven disaster logistics engine for real-time dispatch forecasting and inventory optimization.">
-  <!-- Google Fonts: Inter & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="portal.css">
 </head>
 <body>
-  
-  <!-- Split-Pane Layout (Fills Viewport Natively) -->
+
+  <!-- Active Crisis Event Banner -->
+  <div class="crisis-banner">
+    ⚠️ ACTIVE EVENT: Super Typhoon "Amihan" — PAGASA Signal No. 4 | Expected Landfall in 12 Hours | Data as of 06/09/2026 14:30 PHT
+  </div>
+
   <div class="split-pane">
-    
-    <!-- Left Sidebar (Control Panel) -->
+
+    <!-- ═══════════════════════════════════════════════════
+         LEFT SIDEBAR — Control Panel
+    ════════════════════════════════════════════════════ -->
     <aside class="sidebar">
       <div class="sidebar-top">
-        <!-- Back Link & App Brand Block -->
+
         <div class="brand-block">
           <a href="index.html" class="back-home-link">← Back to Site</a>
           <h1 id="app-title">ReliefSync</h1>
           <p class="subtitle">Disaster Logistics Engine</p>
         </div>
-        
+
+        <!-- Quick Guide Button -->
+        <button id="btn-open-guide" class="guide-btn" title="How to use this dashboard">
+          ❓ How to Use This Dashboard
+        </button>
+
         <!-- Controls Form -->
         <div class="controls-form">
-          <!-- Evacuation Center Dropdown -->
+
+          <!-- Step 1: Select Camp -->
           <div class="form-group">
             <label for="evac-center-select">1. Select Evacuation Center</label>
+            <p class="form-hint">
+              Each center has different stock levels to demonstrate CRITICAL, WARNING, and STABLE scenarios.
+            </p>
             <div class="custom-select-wrapper">
               <select id="evac-center-select" name="evac-center">
-                <option value="brgy_172">Brgy. 172 Covered Court ▾</option>
-                <option value="brgy_173">Brgy. 173 Gymnasium ▾</option>
-                <option value="brgy_174">Brgy. 174 Elementary School ▾</option>
+                <option value="brgy_172">Brgy. 172 Covered Court — 🔴 CRITICAL</option>
+                <option value="brgy_173">Brgy. 173 Gymnasium — 🟢 STABLE</option>
+                <option value="brgy_174">Brgy. 174 Elementary School — 🟡 WARNING</option>
               </select>
             </div>
           </div>
-          
-          <!-- Operation Date Dropdown -->
+
+          <!-- Step 2: Date -->
           <div class="form-group">
             <label for="operation-date-select">2. Target Operation Date</label>
             <div class="custom-select-wrapper">
               <select id="operation-date-select" name="operation-date">
-                <option value="2026-06-08">06 / 08 / 2026 ▾</option>
-                <option value="2026-06-09">06 / 09 / 2026 ▾</option>
-                <option value="2026-06-10">06 / 10 / 2026 ▾</option>
+                <option value="2026-06-08">06 / 08 / 2026</option>
+                <option value="2026-06-09" selected>06 / 09 / 2026 (Today)</option>
+                <option value="2026-06-10">06 / 10 / 2026</option>
               </select>
             </div>
           </div>
-          
-          <!-- Checkbox Group -->
+
+          <!-- Step 3: Categories -->
           <div class="form-group">
             <label class="group-label">3. Select Relief Categories to Predict</label>
             <div class="checkbox-group">
               <label class="checkbox-label" for="category-water">
                 <input type="checkbox" id="category-water" name="categories" value="water" checked>
                 <span class="custom-checkbox"></span>
-                <span class="label-text">Bottled Water</span>
+                <span class="label-text">💧 Bottled Water</span>
               </label>
-              
               <label class="checkbox-label" for="category-rice">
                 <input type="checkbox" id="category-rice" name="categories" value="rice" checked>
                 <span class="custom-checkbox"></span>
-                <span class="label-text">Rice Packs</span>
+                <span class="label-text">🌾 Rice Packs</span>
               </label>
-              
               <label class="checkbox-label" for="category-medical">
-                <input type="checkbox" id="category-medical" name="categories" value="medical">
+                <input type="checkbox" id="category-medical" name="categories" value="medical" checked>
                 <span class="custom-checkbox"></span>
-                <span class="label-text">Medical Kits</span>
+                <span class="label-text">🩹 Medical Kits</span>
               </label>
             </div>
           </div>
-        </div>
-      </div>
-      
-      <!-- Bottom Action Button -->
+
+          <!-- Alert Level Legend -->
+          <div class="legend-box">
+            <p class="legend-title">📊 Alert Level Guide</p>
+            <div class="legend-row">
+              <span class="legend-dot" style="background:#ff4b4b"></span>
+              <span><strong>CRITICAL</strong> — Stock &lt; 30% of 72h demand. Dispatch immediately.</span>
+            </div>
+            <div class="legend-row">
+              <span class="legend-dot" style="background:#FF9500"></span>
+              <span><strong>WARNING</strong> — Stock 30–60% of demand. Plan dispatch today.</span>
+            </div>
+            <div class="legend-row">
+              <span class="legend-dot" style="background:#34C759"></span>
+              <span><strong>STABLE</strong> — Stock &gt; 60% of demand. Monitor only.</span>
+            </div>
+          </div>
+
+        </div><!-- /controls-form -->
+      </div><!-- /sidebar-top -->
+
+      <!-- Action Button -->
       <div class="sidebar-bottom">
         <button id="btn-generate-forecast" class="primary-btn">
           <span class="btn-content">⚡ Generate 72-Hour Forecast</span>
@@ -91,42 +121,57 @@
         </button>
       </div>
     </aside>
-    
-    <!-- Main Workspace (Right Side Dashboard) -->
+
+    <!-- ═══════════════════════════════════════════════════
+         MAIN CONTENT — Dashboard
+    ════════════════════════════════════════════════════ -->
     <main class="main-content">
-      
-      <!-- Row A: Live Camp Status (Camp Pulse Metrics) -->
+
+      <!-- ── ROW A: Status Cards ── -->
       <section class="dashboard-row row-status" id="row-status">
+
         <div class="status-card" id="card-population">
-          <span class="card-label">Current Evacuee Population</span>
+          <span class="card-label">👥 Current Evacuee Population</span>
           <span class="card-value" id="val-population">1,250</span>
-          <div class="card-indicator">Active Registration</div>
+          <div class="card-indicator">People currently registered</div>
         </div>
-        
-        <div class="status-card highlight-alert" id="card-alert">
-          <span class="card-label">Supply Status Level</span>
-          <span class="card-value alert-text" id="val-alert">CRITICAL</span>
-          <div class="card-indicator">Immediate Action Required</div>
+
+        <div class="status-card" id="card-alert">
+          <span class="card-label">🚨 Supply Status Level</span>
+          <span class="card-value alert-text" id="val-alert">CALCULATING...</span>
+          <div class="card-indicator" id="alert-indicator-text">Analyzing stock vs. demand...</div>
         </div>
-        
+
+        <div class="status-card" id="card-signal">
+          <span class="card-label">🌀 PAGASA Typhoon Signal</span>
+          <span class="card-value" id="val-pagasa-signal">Signal No. 4</span>
+          <div class="card-indicator">Affects required supply multiplier</div>
+        </div>
+
         <div class="status-card" id="card-window">
-          <span class="card-label">Optimal Dispatch Window</span>
+          <span class="card-label">🚚 Optimal Dispatch Window</span>
           <span class="card-value" id="val-window">Within 4 Hours</span>
-          <div class="card-indicator">Logistics Schedule</div>
+          <div class="card-indicator">Based on road accessibility forecast</div>
         </div>
+
       </section>
-      
-      <!-- Row B: Predictive Demand Visualizer -->
+
+      <!-- ── ROW B: Demand Depletion Chart ── -->
       <section class="dashboard-row row-chart" id="row-chart">
         <div class="chart-container-box">
+
           <div class="chart-header">
-            <h2 class="section-title">Predictive Demand Visualizer</h2>
-            <div class="chart-legend" id="chart-legend">
-              <!-- Legend items will be added dynamically by JS -->
+            <div>
+              <h2 class="section-title">📉 72-Hour Stock Depletion Forecast</h2>
+              <p class="chart-subtitle" id="chart-subtitle">
+                Each line shows how much stock remains over time if NO new supplies arrive.
+                When a line crosses the red dashed line, that item is in critical shortage.
+                Hover over a dot to see exact values.
+              </p>
             </div>
+            <div class="chart-legend" id="chart-legend"></div>
           </div>
-          
-          <!-- Clean SVG Line Chart Area -->
+
           <div class="svg-wrapper" id="svg-wrapper">
             <svg id="demand-chart" viewBox="0 0 1000 350" preserveAspectRatio="none">
               <defs>
@@ -139,22 +184,20 @@
                   <stop offset="100%" stop-color="#8b5a2b" stop-opacity="0.0"/>
                 </linearGradient>
                 <linearGradient id="gradient-medical" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stop-color="#8e8e93" stop-opacity="0.15"/>
-                  <stop offset="100%" stop-color="#8e8e93" stop-opacity="0.0"/>
+                  <stop offset="0%" stop-color="#e74c3c" stop-opacity="0.15"/>
+                  <stop offset="100%" stop-color="#e74c3c" stop-opacity="0.0"/>
                 </linearGradient>
               </defs>
-              
-              <!-- Y-Axis Grid Lines -->
+
+              <!-- Grid lines -->
               <g class="grid-lines-y">
-                <line x1="80" y1="50" x2="950" y2="50" />
+                <line x1="80" y1="50"  x2="950" y2="50" />
                 <line x1="80" y1="125" x2="950" y2="125" />
                 <line x1="80" y1="200" x2="950" y2="200" />
                 <line x1="80" y1="275" x2="950" y2="275" />
               </g>
-
-              <!-- X-Axis Grid Lines -->
               <g class="grid-lines-x">
-                <line x1="80" y1="50" x2="80" y2="275" />
+                <line x1="80"  y1="50" x2="80"  y2="275" />
                 <line x1="225" y1="50" x2="225" y2="275" />
                 <line x1="370" y1="50" x2="370" y2="275" />
                 <line x1="515" y1="50" x2="515" y2="275" />
@@ -163,75 +206,251 @@
                 <line x1="950" y1="50" x2="950" y2="275" />
               </g>
 
-              <!-- Safety Buffer Threshold (Dotted Line) -->
-              <line id="buffer-threshold-line" x1="80" y1="180" x2="950" y2="180" stroke-dasharray="5 5" />
-              
+              <!-- Safety Buffer Threshold line (20% of demand) -->
+              <line id="buffer-threshold-line" x1="80" y1="240" x2="950" y2="240" stroke-dasharray="6 4" />
               <g class="annotation-layer">
-                <rect x="800" y="165" width="140" height="20" rx="3" fill="#ffffff" stroke="#ff4b4b" stroke-width="1" />
-                <text x="810" y="179" class="annotation-text">[Safety Buffer Threshold]</text>
+                <rect x="715" y="225" width="225" height="20" rx="3" fill="#fff5f5" stroke="#ff4b4b" stroke-width="1" />
+                <text x="722" y="239" class="annotation-text">⚠ Critical Shortage Threshold</text>
               </g>
 
-              <!-- Axes Labels -->
+              <!-- Axis titles -->
               <text x="35" y="165" class="axis-title y-axis-title" transform="rotate(-90 35 165)">Units Remaining in Stock</text>
-              <text x="515" y="315" class="axis-title x-axis-title">Next 72 Hours (12h, 24h, 36h, 48h, 60h, 72h)</text>
+              <text x="515" y="315" class="axis-title x-axis-title">Hours Since Typhoon Landfall (without new resupply)</text>
 
-              <!-- Y-Axis Labels -->
-              <text x="70" y="54" class="tick-label label-y">4,000</text>
+              <!-- Y-Axis tick labels (updated by JS) -->
+              <text x="70" y="54"  class="tick-label label-y">4,000</text>
               <text x="70" y="129" class="tick-label label-y">2,500</text>
               <text x="70" y="204" class="tick-label label-y">1,000</text>
               <text x="70" y="279" class="tick-label label-y">0</text>
 
-              <!-- X-Axis Labels -->
-              <text x="80" y="295" class="tick-label label-x">Arrival</text>
+              <!-- X-Axis tick labels -->
+              <text x="80"  y="295" class="tick-label label-x">Arrival</text>
               <text x="225" y="295" class="tick-label label-x">12h</text>
               <text x="370" y="295" class="tick-label label-x">24h</text>
               <text x="515" y="295" class="tick-label label-x">36h</text>
               <text x="660" y="295" class="tick-label label-x">48h</text>
               <text x="805" y="295" class="tick-label label-x">60h</text>
               <text x="950" y="295" class="tick-label label-x">72h</text>
-              
+
               <g id="chart-paths-container"></g>
               <g id="chart-dots-container"></g>
             </svg>
             <div class="chart-tooltip" id="chart-tooltip"></div>
           </div>
+
         </div>
       </section>
-      
-      <!-- Row C: Actionable Packing Manifest -->
+
+      <!-- ── ROW C: Packing Manifest ── -->
       <section class="dashboard-row row-manifest" id="row-manifest">
         <div class="manifest-container-box">
+
           <div class="manifest-header">
-            <h2 class="section-title">Actionable Packing Manifest</h2>
-            <div style="display: flex; gap: 15px; align-items: center;">
-              <a href="warehouse.html" class="warehouse-link-btn" target="_blank">Launch Warehouse Loading View ↗</a>
-              <div class="manifest-badge">Calculated Dispatch Recommendations</div>
+            <div>
+              <h2 class="section-title">📦 Actionable Packing Manifest</h2>
+              <p class="manifest-subtitle">
+                This table tells you exactly what to load on the truck.
+                <strong>RECOMMENDED DISPATCH</strong> = what's missing from the camp right now.
+              </p>
+            </div>
+            <div class="manifest-actions">
+              <button id="btn-ml-insights" class="secondary-btn">🧠 ML Insights</button>
+              <button id="btn-view-dataset" class="secondary-btn">📂 View Dataset</button>
+              <a href="warehouse.html" class="warehouse-link-btn" target="_blank">🚚 Load Truck ↗</a>
             </div>
           </div>
-          
-          <!-- Data Grid / Table -->
+
           <div class="table-wrapper">
             <table class="manifest-table" id="manifest-table">
               <thead>
                 <tr>
-                  <th class="col-item">Relief Item Category</th>
-                  <th class="col-demand">Predicted 72H Demand</th>
-                  <th class="col-stock">Current On-Site Stock</th>
-                  <th class="col-dispatch highlight-column">RECOMMENDED DISPATCH QUANTITY</th>
+                  <th class="col-item">Relief Item</th>
+                  <th class="col-stock">On-Site Stock<br><small>How many are at camp NOW</small></th>
+                  <th class="col-demand">72H Demand<br><small>ML prediction of total need</small></th>
+                  <th class="col-deficit">Coverage<br><small>% of demand already on-site</small></th>
+                  <th class="col-dispatch highlight-column">RECOMMENDED DISPATCH<br><small>What to send from warehouse</small></th>
                 </tr>
               </thead>
               <tbody id="manifest-table-body">
-                <!-- Rows will be injected dynamically -->
+                <tr>
+                  <td colspan="5" style="text-align:center;color:var(--color-text-muted);padding:30px;">
+                    Select a center and click <strong>⚡ Generate 72-Hour Forecast</strong> to load data.
+                  </td>
+                </tr>
               </tbody>
             </table>
           </div>
+
         </div>
       </section>
+
     </main>
-    
   </div>
 
-  <!-- portal.js — Updated to fetch from Flask ML API. See frontend/portal.js -->
+  <!-- ═══════════════════════════════════════════════════
+       MODAL: ML Insights
+  ════════════════════════════════════════════════════ -->
+  <div class="modal-overlay hidden" id="modal-insights">
+    <div class="modal-card modal-wide">
+      <button class="modal-close-btn" id="btn-close-insights">✕</button>
+      <div class="modal-header">
+        <h3 class="modal-title">🧠 ML Prediction Insights</h3>
+        <p class="modal-subtitle">Transparent math breakdown — exactly how the AI computed each number.</p>
+      </div>
+      <div class="insights-content" id="insights-content">
+        <p style="color:var(--color-text-muted);">Loading insights...</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       MODAL: Dataset Transparency
+  ════════════════════════════════════════════════════ -->
+  <div class="modal-overlay hidden" id="modal-dataset">
+    <div class="modal-card modal-wide">
+      <button class="modal-close-btn" id="btn-close-dataset">✕</button>
+      <div class="modal-header">
+        <h3 class="modal-title">📂 Dataset & Data Sources</h3>
+        <p class="modal-subtitle">Full transparency on the data powering ReliefSync's predictions.</p>
+      </div>
+      <div class="insights-content">
+
+        <div class="dataset-section">
+          <h4>🇵🇭 Philippine Disaster Data Foundation</h4>
+          <p>ReliefSync's ML model was trained on <strong>900 synthetic records</strong> derived directly from Philippine-context disaster parameters, not generic global data. The parameters are sourced from:</p>
+          <ul class="dataset-list">
+            <li>
+              <strong>NDRRMC (National Disaster Risk Reduction and Management Council)</strong><br>
+              Incident report structure, camp population ranges, and supply demand baselines used in actual typhoon operations in Luzon.
+              <a href="https://ndrrmc.gov.ph" target="_blank" class="dataset-link">ndrrmc.gov.ph ↗</a>
+            </li>
+            <li>
+              <strong>PAGASA Tropical Cyclone Wind Signal Classification (Signal 1–5)</strong><br>
+              The Philippine Atmospheric, Geophysical and Astronomical Services Administration's official storm signal system is our weather severity input.
+              Signal 5 = catastrophic (185+ km/h), Signal 1 = minimal (60 km/h).
+              <a href="https://www.pagasa.dost.gov.ph" target="_blank" class="dataset-link">pagasa.dost.gov.ph ↗</a>
+            </li>
+            <li>
+              <strong>SPHERE Humanitarian Standards (2018)</strong><br>
+              The internationally recognized minimum standards for disaster relief operations.
+              Water: 15L per person/day. Rice: 400g per person/day. These form our base consumption rates.
+              <a href="https://spherestandards.org" target="_blank" class="dataset-link">spherestandards.org ↗</a>
+            </li>
+            <li>
+              <strong>DSWD (Dept. of Social Welfare and Development) Family Food Packs</strong><br>
+              Standard Philippine government relief pack composition used to calibrate our rice and supply units.
+              <a href="https://www.dswd.gov.ph" target="_blank" class="dataset-link">dswd.gov.ph ↗</a>
+            </li>
+          </ul>
+        </div>
+
+        <div class="dataset-section" style="margin-top:20px;">
+          <h4>📊 Synthetic Training Dataset Structure</h4>
+          <p>900 records × 5 columns, generated with realistic Philippine storm distributions:</p>
+          <table class="dataset-table">
+            <thead>
+              <tr><th>Column</th><th>Type</th><th>Range</th><th>Description</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>camp_id</td><td>Integer</td><td>1–3</td><td>Which evacuation center</td></tr>
+              <tr><td>supply_category_id</td><td>Integer</td><td>1=Water, 2=Rice, 3=Medicine</td><td>Supply type</td></tr>
+              <tr><td>current_population</td><td>Integer</td><td>300–3,000</td><td>Number of evacuees</td></tr>
+              <tr><td>pagasa_signal</td><td>Integer</td><td>1–5</td><td>PAGASA typhoon signal level</td></tr>
+              <tr><td>units_consumed</td><td>Integer</td><td>varies</td><td>Total units needed in 72h (TARGET)</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="dataset-section" style="margin-top:20px;padding:15px;background:#f0fdf4;border-radius:8px;border-left:4px solid #34C759;">
+          <h4>📈 Model Performance</h4>
+          <p><strong>R² Score: 79.4%</strong> — The model explains ~79% of variation in relief demand.<br>
+          <strong>MAE: ~1,216 units</strong> — On average, predictions are within ±1,216 units of actual need.<br>
+          <strong>Algorithm:</strong> Linear Regression (scikit-learn), trained on 720 records, tested on 180.</p>
+        </div>
+
+        <div class="dataset-section" style="margin-top:20px;padding:15px;background:#fff8e1;border-radius:8px;border-left:4px solid #FF9500;">
+          <h4>⚠️ Disclaimer for Judges</h4>
+          <p>This is a <strong>hackathon prototype</strong>. The training data is <em>synthetic but Philippine-grounded</em> — derived from real NDRRMC/PAGASA parameters rather than an actual historical incident dataset. In a production system, this would be replaced with live NDRRMC incident reports, actual LGU stock inventories, and real historical consumption logs. The model architecture and API pipeline are production-ready.</p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       MODAL: How to Use Guide
+  ════════════════════════════════════════════════════ -->
+  <div class="modal-overlay hidden" id="modal-guide">
+    <div class="modal-card modal-wide">
+      <button class="modal-close-btn" id="btn-close-guide">✕</button>
+      <div class="modal-header">
+        <h3 class="modal-title">❓ Relief Officer Quick Guide</h3>
+        <p class="modal-subtitle">How to use ReliefSync to make dispatch decisions during a typhoon.</p>
+      </div>
+      <div class="insights-content">
+
+        <div class="guide-step">
+          <div class="guide-step-num">1</div>
+          <div class="guide-step-body">
+            <h4>Select Your Evacuation Center</h4>
+            <p>Choose the camp you are managing from the dropdown on the left. Each camp has a different number of evacuees, stock levels, and PAGASA signal exposure. Try all 3 to see CRITICAL, WARNING, and STABLE examples.</p>
+          </div>
+        </div>
+
+        <div class="guide-step">
+          <div class="guide-step-num">2</div>
+          <div class="guide-step-body">
+            <h4>Click "⚡ Generate 72-Hour Forecast"</h4>
+            <p>ReliefSync's ML model analyzes the population, PAGASA storm signal, and supply type to predict how many units will be needed over the next 72 hours. This call goes to a local Python/Flask server running the AI model.</p>
+          </div>
+        </div>
+
+        <div class="guide-step">
+          <div class="guide-step-num">3</div>
+          <div class="guide-step-body">
+            <h4>Read the Status Cards (Top Row)</h4>
+            <p><strong>🔴 CRITICAL</strong> = Less than 30% of needed supplies are on-site. Dispatch a truck <em>immediately</em>.<br>
+            <strong>🟡 WARNING</strong> = 30–60% covered. Dispatch today before roads become impassable.<br>
+            <strong>🟢 STABLE</strong> = Over 60% covered. Monitor and prepare for next cycle.</p>
+          </div>
+        </div>
+
+        <div class="guide-step">
+          <div class="guide-step-num">4</div>
+          <div class="guide-step-body">
+            <h4>Read the Depletion Chart</h4>
+            <p>The chart shows how fast each supply runs out <em>if no new truck arrives</em>. The steep drop from 12h–36h represents typhoon peak — when roads are blocked and consumption is highest. When a line crosses the <strong style="color:#ff4b4b;">red dashed line</strong>, that supply is in critical shortage.</p>
+          </div>
+        </div>
+
+        <div class="guide-step">
+          <div class="guide-step-num">5</div>
+          <div class="guide-step-body">
+            <h4>Use the Packing Manifest to Order Supplies</h4>
+            <p>The table shows exactly how many units to put on the dispatch truck. The <strong>Coverage Bar</strong> is color-coded: RED means almost empty, GREEN means sufficient. The <strong>Recommended Dispatch</strong> column is the number to radio to the DSWD warehouse.</p>
+          </div>
+        </div>
+
+        <div class="guide-step">
+          <div class="guide-step-num">6</div>
+          <div class="guide-step-body">
+            <h4>Launch the Warehouse Loading View</h4>
+            <p>Click <strong>"🚚 Load Truck ↗"</strong> to open the warehouse Kanban board. Drag supply cards from "To Load" → "In Progress" → "Loaded". Once all items are loaded, the dispatch button unlocks and you can confirm the truck has left.</p>
+          </div>
+        </div>
+
+        <div class="guide-step">
+          <div class="guide-step-num">7</div>
+          <div class="guide-step-body">
+            <h4>View ML Insights for Transparency</h4>
+            <p>Click <strong>"🧠 ML Insights"</strong> to see a step-by-step breakdown of how the AI computed each number: Base consumption + PAGASA storm surge bonus = Total demand. This builds trust with LGU officials and NDRRMC coordinators.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
   <script src="portal.js"></script>
 </body>
 </html>

@@ -24,37 +24,46 @@
       </div>
     </header>
 
-    <!-- 2. Centerpiece Loading Manifest Checklist -->
+    <!-- 2. Centerpiece Loading Kanban Board -->
     <main class="manifest-content">
-      <h2 class="checklist-header">LOADING CHECKLIST</h2>
+      <h2 class="checklist-header">LOADING KANBAN BOARD</h2>
       
-      <div class="checklist-grid">
+      <div class="kanban-board">
         
-        <!-- Row 1: Water -->
-        <label class="checklist-row" for="chk-water">
-          <div class="row-checkbox-wrapper">
-            <input type="checkbox" id="chk-water" class="huge-checkbox">
-            <span class="custom-huge-box"></span>
+        <!-- Column 1: Pending -->
+        <div class="kanban-column">
+          <h3 class="kanban-title">TO LOAD</h3>
+          <div class="kanban-dropzone" id="zone-pending">
+            <div class="kanban-card" draggable="true" id="card-water">
+              <span class="item-name">💧 BOTTLED WATER (1L)</span>
+              <span class="load-quantity">2,950 UNITS</span>
+            </div>
+            <div class="kanban-card" draggable="true" id="card-rice">
+              <span class="item-name">🌾 RICE (5KG)</span>
+              <span class="load-quantity">850 PACKS</span>
+            </div>
+            <div class="kanban-card" draggable="true" id="card-medical">
+              <span class="item-name">🩹 MEDICAL KITS</span>
+              <span class="load-quantity">95 KITS</span>
+            </div>
           </div>
-          <div class="row-text">
-            <span class="item-name">💧 BOTTLED WATER (1L PACKS)</span>
-            <span class="load-quantity">LOAD EXACTLY: 2,950 UNITS</span>
-          </div>
-          <div class="row-status-tag">PENDING</div>
-        </label>
+        </div>
 
-        <!-- Row 2: Rice -->
-        <label class="checklist-row" for="chk-rice">
-          <div class="row-checkbox-wrapper">
-            <input type="checkbox" id="chk-rice" class="huge-checkbox">
-            <span class="custom-huge-box"></span>
+        <!-- Column 2: In Progress -->
+        <div class="kanban-column">
+          <h3 class="kanban-title">LOADING (IN PROGRESS)</h3>
+          <div class="kanban-dropzone" id="zone-loading">
+            <!-- Drop area -->
           </div>
-          <div class="row-text">
-            <span class="item-name">🌾 RICE (5KG BAGS)</span>
-            <span class="load-quantity">LOAD EXACTLY: 850 PACKS</span>
+        </div>
+
+        <!-- Column 3: Loaded -->
+        <div class="kanban-column">
+          <h3 class="kanban-title">LOADED (ON TRUCK)</h3>
+          <div class="kanban-dropzone" id="zone-loaded">
+            <!-- Drop area -->
           </div>
-          <div class="row-status-tag">PENDING</div>
-        </label>
+        </div>
 
       </div>
     </main>
@@ -94,8 +103,9 @@
         <p><strong>Destination:</strong> Brgy. 172 Covered Court</p>
         <p><strong>Cargo Manifest:</strong></p>
         <ul>
-          <li>💧 2,950 Units of Bottled Water (1L Packs)</li>
-          <li>🌾 850 Packs of Rice (5KG Bags)</li>
+          <li>💧 2,950 Units of Bottled Water (1L)</li>
+          <li>🌾 850 Packs of Rice (5KG)</li>
+          <li>🩹 95 Medical Kits</li>
         </ul>
         <p class="ledger-tag">Transaction locked to LGU Disaster Ledger. Ref: <strong>#TX-8472901-M</strong></p>
       </div>

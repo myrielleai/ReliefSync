@@ -4,8 +4,6 @@
  */
 
 document.addEventListener('DOMContentLoaded', () => {
-  const chkWater = document.getElementById('chk-water');
-  const chkRice = document.getElementById('chk-rice');
   const btnDispatch = document.getElementById('btn-dispatch-truck');
   const btnPrint = document.getElementById('btn-print-tag');
   
@@ -13,25 +11,53 @@ document.addEventListener('DOMContentLoaded', () => {
   const overlaySuccess = document.getElementById('dispatch-success-overlay');
   const btnReturn = document.getElementById('btn-return-portal');
 
-  // --- 1. Handle checklist toggles ---
-  const handleCheckChange = (checkbox) => {
-    const row = checkbox.closest('.checklist-row');
-    const statusTag = row.querySelector('.row-status-tag');
-    
-    if (checkbox.checked) {
-      row.classList.add('checked-row');
-      statusTag.textContent = 'LOADED';
-    } else {
-      row.classList.remove('checked-row');
-      statusTag.textContent = 'PENDING';
-    }
-    
-    // Dispatch is only enabled if all manifests are checked/loaded
-    btnDispatch.disabled = !(chkWater.checked && chkRice.checked);
-  };
+  // --- 1. Handle Drag and Drop for Kanban Board ---
+  const cards = document.querySelectorAll('.kanban-card');
+  const dropzones = document.querySelectorAll('.kanban-dropzone');
+  
+  // Track total items to know when dispatch is ready
+  const totalItems = cards.length;
 
-  chkWater.addEventListener('change', () => handleCheckChange(chkWater));
-  chkRice.addEventListener('change', () => handleCheckChange(chkRice));
+  cards.forEach(card => {
+    card.addEventListener('dragstart', () => {
+      card.classList.add('dragging');
+    });
+
+    card.addEventListener('dragend', () => {
+      card.classList.remove('dragging');
+      checkDispatchStatus();
+    });
+  });
+
+  dropzones.forEach(zone => {
+    zone.addEventListener('dragover', e => {
+      e.preventDefault();
+      zone.classList.add('drag-over');
+    });
+
+    zone.addEventListener('dragleave', () => {
+      zone.classList.remove('drag-over');
+    });
+
+    zone.addEventListener('drop', e => {
+      e.preventDefault();
+      zone.classList.remove('drag-over');
+      const draggingCard = document.querySelector('.dragging');
+      if (draggingCard) {
+        zone.appendChild(draggingCard);
+      }
+    });
+  });
+
+  // Enable dispatch only if all cards are in the 'zone-loaded' dropzone
+  function checkDispatchStatus() {
+    const loadedZone = document.getElementById('zone-loaded');
+    if (loadedZone && loadedZone.children.length === totalItems) {
+      btnDispatch.disabled = false;
+    } else {
+      btnDispatch.disabled = true;
+    }
+  }
 
   // --- 2. Print Waybill Toast trigger ---
   btnPrint.addEventListener('click', () => {

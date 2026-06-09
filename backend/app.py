@@ -172,7 +172,7 @@ def predict():
     {
         "camp_id": 1,           (integer: 1, 2, or 3)
         "population": 1250,     (integer: number of evacuees)
-        "weather": 7.5,         (float: severity 1.0 to 10.0)
+        "pagasa_signal": 4,     (integer: PAGASA Signal 1 to 5)
         "item_type": "water"    (string: "water", "rice", or "medical")
     }
 
@@ -194,7 +194,7 @@ def predict():
             # The frontend sent an empty or malformed body
             return jsonify({
                 "error": "No JSON data received",
-                "message": "Request body must contain JSON with camp_id, population, weather, item_type"
+                "message": "Request body must contain JSON with camp_id, population, pagasa_signal, item_type"
             }), 400  # HTTP 400 = Bad Request
 
     except Exception as parse_error:
@@ -209,7 +209,7 @@ def predict():
     try:
         camp_id = int(payload.get("camp_id", 1))
         population = int(payload.get("population", 1000))
-        weather = float(payload.get("weather", 5.0))
+        pagasa_signal = int(payload.get("pagasa_signal", 2))
         item_type = str(payload.get("item_type", "water")).lower().strip()
 
         # Convert item_type string to the numeric ID our model was trained on:
@@ -226,11 +226,11 @@ def predict():
         # Basic sanity checks — clamp values to valid ranges
         camp_id = max(1, min(3, camp_id))           # Must be 1, 2, or 3
         population = max(1, min(50000, population)) # At least 1, max 50,000
-        weather = max(1.0, min(10.0, weather))      # Scale of 1–10
+        pagasa_signal = max(1, min(5, pagasa_signal)) # Signal 1 to 5
 
         print(f"📩 Received prediction request:")
         print(f"   Camp ID: {camp_id} | Population: {population} | "
-              f"Weather: {weather} | Item: {item_type} (id={supply_category_id})")
+              f"PAGASA Signal: {pagasa_signal} | Item: {item_type} (id={supply_category_id})")
 
     except (ValueError, TypeError) as field_error:
         # This catches cases where e.g. someone sends population="lots" instead of 1000
@@ -254,14 +254,14 @@ def predict():
             # =================================================================
             #
             # We create a 2D numpy array from our 4 features.
-            # Shape: [[camp_id, supply_category_id, population, weather]]
+            # Shape: [[camp_id, supply_category_id, population, pagasa_signal]]
             #
             # WHY a 2D array? sklearn's predict() always expects a 2D input
             # because it's designed to predict on MULTIPLE rows at once.
             # We have 1 row, so we wrap it: [[...]] instead of [...]
             #
             # model.predict() applies our learned formula:
-            #   y = m₁·camp_id + m₂·supply_cat_id + m₃·population + m₄·weather + b
+            #   y = m₁·camp_id + m₂·supply_cat_id + m₃·population + m₄·pagasa_signal + b
             #
             # It returns an array of predictions — we grab [0] for our single result.
             #
@@ -270,18 +270,34 @@ def predict():
                 camp_id,
                 supply_category_id,
                 population,
-                weather
+                pagasa_signal
             ]])
 
             # Run the prediction
             raw_prediction = model.predict(features)
 
             # Convert from numpy float to regular Python int (JSON-serializable)
-            # We round to the nearest whole unit (you can't dispatch 3.7 water bottles)
             dispatch_qty = max(0, int(round(raw_prediction[0])))
-            source = "ml_model"
 
-            print(f"🤖 ML Prediction → {dispatch_qty} units")
+            # ─── SPHERE Minimum Floor ───────────────────────────────────────
+            # The linear model can produce near-zero values for medical kits
+            # at lower PAGASA signals due to coefficient cancellation.
+            # Apply SPHERE minimum standards as a floor:
+            #   Water:   at least 2 units per person (extremely conservative)
+            #   Rice:    at least 0.5 packs per person
+            #   Medical: at least 5% of population (SPHERE: treat 1 in 20 evacuees)
+            sphere_floors = {
+                "water":   int(population * 2.0),
+                "rice":    int(population * 0.5),
+                "medical": int(population * 0.05)
+            }
+            floor = sphere_floors.get(item_type, 0)
+            dispatch_qty = max(dispatch_qty, floor)
+            # ────────────────────────────────────────────────────────────────
+
+            source = "ml_model"
+            print(f"ML Prediction (post-floor) = {dispatch_qty} units")
+
 
     except Exception as model_error:
         # If the model crashes for any reason, fall back gracefully
@@ -302,7 +318,7 @@ def predict():
             "camp_id": camp_id,
             "supply_category_id": supply_category_id,
             "population": population,
-            "weather_severity": weather,
+            "pagasa_signal": pagasa_signal,
             "item_type": item_type
         }
     }
