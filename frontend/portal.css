@@ -37,28 +37,31 @@ body {
   min-height: 100vh;
   margin: 0;
   padding: 0;
-  overflow: hidden;
+  overflow-y: auto; /* whole page scrolls — no internal scroll traps */
 }
 
 /* Split Pane Layout - Fills Viewport Natively */
 .split-pane {
   display: flex;
   width: 100vw;
-  height: 100vh;
+  min-height: 100vh; /* grows with content instead of locking to viewport */
+  align-items: flex-start;
 }
 
 /* 1. Left Sidebar Component */
 .sidebar {
   width: 25%;
-  height: 100%;
+  min-height: 100vh;
+  height: auto;
   border-right: 1px solid var(--color-border-light);
   background-color: #ffffff;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   padding: 40px 30px;
   z-index: 10;
-  overflow-y: auto;
+  position: sticky; /* sidebar stays visible while right side scrolls */
+  top: 0;
+  align-self: flex-start;
 }
 
 /* Push the primary action further down so it's not too close to controls */
@@ -316,14 +319,13 @@ body {
 /* 2. Main Workspace Component (Right Side) */
 .main-content {
   width: 75%;
-  height: 100%;
+  height: auto; /* grows with content — page scrolls, not this element */
   background-color: var(--color-fill-light);
   padding: 40px 45px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
   gap: 25px;
-  overflow-y: auto;
+  overflow-y: visible;
 }
 
 /* Row Layouts */
