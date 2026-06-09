@@ -1,0 +1,38 @@
+# render.yaml — Render.com deployment configuration for ReliefSync ML Backend
+#
+# HOW TO USE:
+# 1. Go to https://dashboard.render.com
+# 2. New → Blueprint
+# 3. Connect your GitHub repo (myrielleai/ReliefSync)
+# 4. Render will read this file and configure the service automatically.
+#
+# DOCS: https://render.com/docs/blueprint-spec
+
+services:
+  - type: web
+    name: reliefsync-backend
+    runtime: python
+    region: singapore          # Closest to the Philippines for low latency
+    plan: free                 # Free tier: 750 hours/month
+
+    # Root of the Python service
+    rootDir: backend
+
+    # Build command: install dependencies + train the ML model
+    # (relief_model.pkl is in .gitignore so we must generate it at build time)
+    buildCommand: |
+      pip install -r requirements.txt
+      cd .. && python model_training/train_model.py
+
+    # Start the Flask server. Render injects the PORT environment variable.
+    startCommand: python app.py
+
+    # Environment variables
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.0
+      - key: FLASK_ENV
+        value: production
+
+    # Health check endpoint (so Render knows the service is ready)
+    healthCheckPath: /api/health

@@ -380,16 +380,27 @@ def health_check():
 # ==============================================================================
 
 if __name__ == "__main__":
+    import os
+
+    # Render (and most cloud platforms) injects a PORT environment variable.
+    # Locally, we default to 5000.
+    # This one line makes the server work both locally AND on Render with zero changes.
+    port = int(os.environ.get("PORT", 5000))
+
+    # Disable debug mode in production (Render sets FLASK_ENV=production)
+    is_debug = os.environ.get("FLASK_ENV", "development") != "production"
+
     print("\n" + "=" * 60)
     print("  ReliefSync Flask API Server Starting...")
     print("=" * 60)
-    print(f"  🚀 Server running at: http://127.0.0.1:5000")
-    print(f"  🏥 Health check:     http://127.0.0.1:5000/api/health")
-    print(f"  🤖 Predict endpoint: POST http://127.0.0.1:5000/api/predict")
+    print(f"  Server running at: http://0.0.0.0:{port}")
+    print(f"  Health check:     http://0.0.0.0:{port}/api/health")
+    print(f"  Predict endpoint: POST http://0.0.0.0:{port}/api/predict")
+    print(f"  Debug mode: {is_debug}")
     print("=" * 60 + "\n")
 
     app.run(
-        debug=True,       # Show errors and auto-reload on save
+        debug=is_debug,   # False on Render (FLASK_ENV=production), True locally
         host="0.0.0.0",   # Accept connections from any network interface
-        port=5000         # Listen on port 5000
+        port=port         # 5000 locally, Render's PORT env variable in the cloud
     )
