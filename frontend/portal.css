@@ -61,6 +61,18 @@ body {
   overflow-y: auto;
 }
 
+/* Push the primary action further down so it's not too close to controls */
+.sidebar-bottom {
+  margin-top: auto;
+  padding-bottom: 48px; /* space from bottom edge */
+}
+
+@media (max-width: 900px) {
+  .sidebar-bottom {
+    padding-bottom: 28px;
+  }
+}
+
 .brand-block {
   margin-bottom: 40px;
 }
