@@ -56,7 +56,8 @@ body {
 /* 1. Left Sidebar Component */
 .sidebar {
   width: 25%;
-  flex-shrink: 0;         /* never shrinks narrower than 25% */
+  min-height: 100vh;      /* white background always spans at least full screen */
+  flex-shrink: 0;
   border-right: 1px solid var(--color-border-light);
   background-color: #ffffff;
   display: flex;
@@ -64,7 +65,6 @@ body {
   justify-content: space-between;
   padding: 40px 30px;
   z-index: 10;
-  /* NO height or min-height — flexbox align-items:stretch handles it */
 }
 
 /* Push the primary action further down so it's not too close to controls */
@@ -417,10 +417,9 @@ body {
 
 /* ROW B: Predictive Demand Graph */
 .row-chart {
-  flex-grow: 1;
   display: flex;
   flex-direction: column;
-  min-height: 350px;
+  min-height: 500px;
 }
 
 .chart-container-box {
@@ -604,10 +603,10 @@ body {
 }
 
 
-/* ROW C: Actionable Packing Manifest */
+/* ROW C: Actionable Packing Manifest — NO scroll, display fully */
 .row-manifest {
   height: auto;
-  min-height: 200px;
+  overflow: visible;
 }
 
 .manifest-container-box {
@@ -615,10 +614,11 @@ body {
   border: 1px solid var(--color-border-light);
   border-radius: 12px;
   padding: 20px 24px;
-  height: 100%;
+  height: auto;
   display: flex;
   flex-direction: column;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.01);
+  overflow: visible;
 }
 
 .manifest-header {
@@ -659,7 +659,7 @@ body {
 
 .table-wrapper {
   width: 100%;
-  overflow-x: auto;
+  overflow: visible;
 }
 
 .manifest-table {
