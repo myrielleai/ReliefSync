@@ -24,10 +24,8 @@
   --transition-normal: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+html {
+  overflow-x: hidden; /* prevent horizontal scrollbar from any overflow */
 }
 
 body {
@@ -37,21 +35,28 @@ body {
   min-height: 100vh;
   margin: 0;
   padding: 0;
+  overflow-x: hidden;
   overflow-y: auto;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 /* Split Pane Layout */
 .split-pane {
   display: flex;
-  width: 100%;
+  width: 100%; /* 100% not 100vw — avoids scrollbar-width overflow */
   min-height: 100vh;
-  align-items: stretch; /* sidebar stretches to match content height */
+  align-items: stretch; /* both columns grow to the same height */
 }
 
 /* 1. Left Sidebar Component */
 .sidebar {
   width: 25%;
-  min-height: 100vh;      /* at minimum fills the screen */
+  flex-shrink: 0;         /* never shrinks narrower than 25% */
   border-right: 1px solid var(--color-border-light);
   background-color: #ffffff;
   display: flex;
@@ -59,7 +64,7 @@ body {
   justify-content: space-between;
   padding: 40px 30px;
   z-index: 10;
-  /* no sticky, no overflow — stretches with the page naturally */
+  /* NO height or min-height — flexbox align-items:stretch handles it */
 }
 
 /* Push the primary action further down so it's not too close to controls */
@@ -316,13 +321,15 @@ body {
 
 /* 2. Main Workspace Component (Right Side) */
 .main-content {
-  width: 75%;
-  height: auto; /* grows with content — page scrolls, not this element */
+  flex: 1;                /* takes remaining width */
+  min-width: 0;           /* prevents flex child from overflowing */
+  height: auto;
   background-color: var(--color-fill-light);
   padding: 40px 45px;
   display: flex;
   flex-direction: column;
   gap: 25px;
+  overflow-x: hidden;     /* no horizontal bleed */
   overflow-y: visible;
 }
 
