@@ -17,11 +17,9 @@ ReliefSync is a **decision-support tool** for disaster relief operations during 
 2. [Architecture](#architecture)
 3. [Running Locally](#running-locally)
 4. [Testing the App](#testing-the-app)
-5. [Deploying to Vercel (Frontend)](#deploying-to-vercel-frontend-only)
-6. [Deploying the Backend to Render](#deploying-the-ml-backend-to-render)
-7. [Data Sources](#data-sources)
-8. [Tech Stack](#tech-stack)
-9. [Scope and Limitations](#scope-and-limitations)
+5. [Data Sources](#data-sources)
+6. [Tech Stack](#tech-stack)
+7. [Scope and Limitations](#scope-and-limitations)
 
 ---
 
@@ -239,63 +237,6 @@ Expected response:
 1. Stop the Flask server (close its terminal)
 2. Click "Generate 72-Hour Forecast" on any camp
 3. App still produces results using SPHERE standard estimates — no error shown
-
----
-
-## Deploying to Vercel (Frontend Only)
-
-Vercel hosts **static files only** — it cannot run Python. The frontend (HTML/CSS/JS) works perfectly on Vercel. The ML backend must run separately.
-
-| Setting | Value |
-|---|---|
-| Framework Preset | `Other` |
-| Root Directory | `./` (default) |
-| Build Command | *(leave empty)* |
-| Output Directory | *(leave empty)* |
-
-The `vercel.json` file at the root handles routing automatically.
-
-> The frontend works on Vercel without the backend — it uses built-in SPHERE fallback calculations when Flask is unreachable.
-
----
-
-## Deploying the ML Backend to Render
-
-**Render** natively runs Python web servers for free and is the recommended platform for the Flask backend.
-
-### Setup Steps
-
-1. Go to [render.com](https://render.com) and create an account
-2. Click **New → Blueprint** and connect the GitHub repository
-3. Render reads the included `render.yaml` file and auto-configures everything
-
-**Manual settings** (if not using Blueprint):
-
-| Setting | Value |
-|---|---|
-| Name | `reliefsync-backend` |
-| Region | `Singapore` (lowest latency from PH) |
-| Root Directory | `backend` |
-| Runtime | `Python 3` |
-| Build Command | `pip install -r requirements.txt && python ../model_training/train_model.py` |
-| Start Command | `python app.py` |
-| Instance Type | `Free` |
-
-### Update Frontend to Point to Render
-
-Once deployed, update this line in [`frontend/portal.js`](frontend/portal.js):
-
-```js
-// Change this:
-const ML_API_BASE_URL = "http://127.0.0.1:5000";
-
-// To your Render URL:
-const ML_API_BASE_URL = "https://reliefsync-backend.onrender.com";
-```
-
-Then commit and push — Vercel will redeploy the frontend automatically.
-
-> **Hackathon tip:** For a live demo, run Flask locally rather than on Render. Render's free tier has a ~30-second cold start after 15 minutes of inactivity, which would cause a visible delay when a judge clicks "Generate Forecast" for the first time.
 
 ---
 
