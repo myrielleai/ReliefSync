@@ -767,9 +767,7 @@ thead th.highlight-column {
   box-shadow: 0 2px 4px rgba(0,0,0,0.1);
 }
 
-.split-pane {
-  height: calc(100vh - 40px);
-}
+/* split-pane height is handled by the main rule above — no override needed */
 
 /* Secondary Button (ML Insights) */
 .secondary-btn {
