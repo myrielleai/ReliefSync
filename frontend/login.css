@@ -1,0 +1,249 @@
+/* ReliefSync Enterprise Login Interface — Authoritative Secure Dark Mode */
+:root {
+  --color-bg-dark: #1A1D20;       /* Deep charcoal background */
+  --color-card-bg: #24292E;       /* Slightly lighter container fill */
+  --color-border-dark: #373E47;   /* Clean charcoal borders */
+  
+  /* Text colors */
+  --color-text-bright: #F0F6FC;   /* Stark white/light gray */
+  --color-text-muted: #8B949E;    /* Muted gray */
+  --color-text-alert: #FF4B4B;    /* Sharp alert red accent */
+  
+  /* Accent colors */
+  --color-accent-blue: #58A6FF;   /* Digital blue */
+  --color-accent-blue-hover: #388BFD;
+  
+  /* Typography */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  
+  /* Animations */
+  --transition-normal: 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  --transition-fast: 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--color-bg-dark);
+  color: var(--color-text-bright);
+  font-family: var(--font-sans);
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  position: relative;
+}
+
+/* Secure backdrop mesh grid pattern overlay */
+.secure-bg-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image: 
+    linear-gradient(to right, rgba(255,255,255,0.01) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255,255,255,0.01) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* 1. Center Alignment Card Wrapper */
+.login-wrapper {
+  width: 100%;
+  max-width: 460px;
+  padding: 24px;
+  position: relative;
+  z-index: 10;
+  animation: cardFadeIn 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes cardFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.login-card {
+  background-color: var(--color-card-bg);
+  border: 1px solid var(--color-border-dark);
+  border-radius: 12px;
+  padding: 40px 36px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+}
+
+/* 2. Card Header */
+.login-header {
+  text-align: center;
+  margin-bottom: 35px;
+}
+
+.brand-title {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -1.2px;
+  color: var(--color-text-bright);
+  margin-bottom: 6px;
+}
+
+.brand-subtitle {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--color-text-alert); /* Sharp warning subtitle color */
+  text-transform: uppercase;
+}
+
+/* 3. Form Fields */
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  margin-bottom: 25px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+}
+
+.form-group input[type="email"],
+.form-group input[type="password"],
+.form-group select {
+  width: 100%;
+  padding: 14px 16px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-bright);
+  background-color: var(--color-bg-dark);
+  border: 1px solid var(--color-border-dark);
+  border-radius: 6px;
+  outline: none;
+  transition: all var(--transition-fast);
+}
+
+.form-group input:hover,
+.form-group select:hover {
+  border-color: #555c65;
+}
+
+.form-group input:focus,
+.form-group select:focus {
+  border-color: var(--color-accent-blue);
+  box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.15);
+}
+
+/* 4. Dropdown Selector Style */
+.custom-select-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.custom-select-wrapper select {
+  appearance: none;
+  cursor: pointer;
+}
+
+/* 5. Submission Button */
+.auth-btn {
+  width: 100%;
+  padding: 16px 20px;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  font-weight: 700;
+  color: #ffffff;
+  background-color: var(--color-accent-blue); /* High contrast blue key action */
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all var(--transition-normal);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 4px 12px rgba(88, 166, 255, 0.15);
+}
+
+.auth-btn:hover {
+  background-color: var(--color-accent-blue-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(88, 166, 255, 0.25);
+}
+
+.auth-btn:active {
+  transform: translateY(0);
+}
+
+/* Loading animations */
+.btn-spinner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.spinner {
+  animation: rotate 2s linear infinite;
+  width: 16px;
+  height: 16px;
+}
+
+.spinner .path {
+  stroke: #ffffff;
+  stroke-linecap: round;
+  animation: dash 1.5s ease-in-out infinite;
+}
+
+@keyframes rotate {
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes dash {
+  0% { stroke-dasharray: 1, 150; stroke-dashoffset: 0; }
+  50% { stroke-dasharray: 90, 150; stroke-dashoffset: -35; }
+  100% { stroke-dasharray: 90, 150; stroke-dashoffset: -124; }
+}
+
+/* 6. System Warning Disclaimer */
+.login-footer {
+  border-top: 1px solid var(--color-border-dark);
+  padding-top: 20px;
+  margin-top: 10px;
+}
+
+.disclaimer-text {
+  font-size: 11px;
+  font-weight: 500;
+  font-style: italic;
+  color: var(--color-text-muted);
+  text-align: center;
+  line-height: 1.5;
+  letter-spacing: 0.1px;
+}

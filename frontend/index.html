@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ReliefSync — Predictive Supply Forecaster</title>
+  <meta name="description" content="Predictive logistics and machine learning-driven inventory optimization for disaster command centers.">
+  <!-- Google Fonts: Inter for typography -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Navigation Bar -->
+  <header class="navbar">
+    <div class="nav-container">
+      <a href="index.html" class="logo">ReliefSync</a>
+      
+      <nav class="nav-links">
+        <a href="#features" class="nav-link">Features</a>
+        <a href="#impact" class="nav-link" id="link-impact">Impact Metrics</a>
+        <a href="#docs" class="nav-link" id="link-docs">Documentation</a>
+      </nav>
+      
+      <div class="nav-actions">
+        <a href="login.html" class="portal-btn">Access Portal →</a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-section">
+    <div class="hero-container">
+      <!-- Hero Left: Text & CTA -->
+      <div class="hero-text-block">
+        <h1 class="hero-headline">Shifting Disaster Logistics From Reactive Crisis to Predictive Relief.</h1>
+        <p class="hero-supporting">
+          Empowering municipal disaster teams and humanitarian networks with machine learning to eliminate supply bottlenecks, prevent resource waste, and ensure equitable distribution.
+        </p>
+        <button id="btn-deploy-cta" class="cta-primary-btn">Deploy for Your Municipality</button>
+      </div>
+      
+      <!-- Hero Right: SVG Route Map Graphic -->
+      <div class="hero-graphic-block">
+        <div class="graphic-card">
+          <svg class="routes-map-svg" viewBox="0 0 500 400" width="100%" height="100%">
+            <!-- Background grid pattern -->
+            <defs>
+              <pattern id="grid" width="30" height="30" patternUnits="userSpaceOnUse">
+                <path d="M 30 0 L 0 0 0 30" fill="none" stroke="#f1f1f4" stroke-width="1"/>
+              </pattern>
+            </defs>
+            <rect width="100%" height="100%" fill="url(#grid)" />
+
+            <!-- Route Paths (Animated) -->
+            <path class="route-path path-one" d="M 100 250 L 220 180 L 380 150" />
+            <path class="route-path path-two" d="M 100 250 L 220 280 L 400 300" />
+            <path class="route-path path-three" d="M 220 180 L 320 280" />
+
+            <!-- Active delivery packet circles -->
+            <circle class="delivery-dot dot-one" r="5" fill="#0066cc" />
+            <circle class="delivery-dot dot-two" r="5" fill="#8b5a2b" />
+
+            <!-- Node Points -->
+            <!-- Base Station / Depot -->
+            <g class="map-node node-depot" transform="translate(100, 250)">
+              <circle r="12" fill="#e5e5ea" stroke="#1c1c1e" stroke-width="2" />
+              <circle r="4" fill="#1c1c1e" />
+              <text y="-20" class="node-label">Central Depot</text>
+            </g>
+
+            <!-- Node 1: Evac Court -->
+            <g class="map-node node-court" transform="translate(220, 180)">
+              <circle r="8" fill="#ffffff" stroke="#0066cc" stroke-width="2" />
+              <circle class="pulse-ring" r="14" fill="none" stroke="#0066cc" stroke-width="1.5" />
+              <text y="-16" class="node-label">Brgy. 172 Court</text>
+            </g>
+
+            <!-- Node 2: Gym -->
+            <g class="map-node node-gym" transform="translate(380, 150)">
+              <circle r="8" fill="#ffffff" stroke="#8b5a2b" stroke-width="2" />
+              <text y="-16" class="node-label">Brgy. 173 Gym</text>
+            </g>
+
+            <!-- Node 3: School -->
+            <g class="map-node node-school" transform="translate(400, 300)">
+              <circle r="8" fill="#ffffff" stroke="#ff4b4b" stroke-width="2" />
+              <circle class="pulse-ring-alert" r="14" fill="none" stroke="#ff4b4b" stroke-width="1.5" />
+              <text y="24" class="node-label alert-node">Brgy. 174 School</text>
+            </g>
+
+            <!-- Node 4: Secondary Gym -->
+            <g class="map-node node-secondary" transform="translate(320, 280)">
+              <circle r="6" fill="#ffffff" stroke="#8e8e93" stroke-width="2" />
+              <text y="18" class="node-label">Gym 173-B</text>
+            </g>
+          </svg>
+          <div class="graphic-badge">
+            <span class="pulse-bullet"></span> ML Route Dispatch Nodes (Live Simulation)
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Problem & Value Proposition Grid -->
+  <section class="value-prop-section" id="features">
+    <div class="section-container">
+      <div class="section-heading-block">
+        <span class="section-subtitle">Core Pillars</span>
+        <h2 class="section-title">The Logistics Management Framework</h2>
+      </div>
+      
+      <div class="value-grid">
+        <!-- Box 1 -->
+        <div class="val-box">
+          <div class="box-icon">📊</div>
+          <h3 class="box-title">Predictive Demand Forecasting</h3>
+          <p class="box-desc">
+            Replace manual spreadsheets and delayed data logs with 72-hour machine learning projections, mapping evacuee rates and supply trends automatically.
+          </p>
+        </div>
+        
+        <!-- Box 2 -->
+        <div class="val-box">
+          <div class="box-icon">⚡</div>
+          <h3 class="box-title">Logistical Resource Optimization</h3>
+          <p class="box-desc">
+            Generate instant packing manifests tailored to on-site stock availability. Eliminate duplicate dispatch trips, minimize delivery times, and cut fuel emissions.
+          </p>
+        </div>
+        
+        <!-- Box 3 -->
+        <div class="val-box">
+          <div class="box-icon">⚖️</div>
+          <h3 class="box-title">Equitable Crisis Distribution</h3>
+          <p class="box-desc">
+            Ensure isolated or marginalized evacuation centers receive their fair share of medical kits, food, and water without bureaucratic bottlenecks.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="footer-container">
+      <div class="footer-left">
+        <p class="copyright">© 2026 ReliefSync. All rights reserved.</p>
+      </div>
+      <div class="footer-right">
+        <span class="info-badge">Built for Info-Systems Innovation</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Deploy Request Modal (Popup Dialog) -->
+  <div class="modal-overlay" id="modal-deploy">
+    <div class="modal-card">
+      <button class="modal-close-btn" id="btn-close-modal">✕</button>
+      <div class="modal-header">
+        <h3 class="modal-title">Request Municipal Deployment</h3>
+        <p class="modal-subtitle">Integrate ReliefSync into your local government disaster planning protocols.</p>
+      </div>
+      
+      <form class="modal-form" id="deploy-request-form">
+        <div class="form-group">
+          <label for="input-municipality">Municipality / City Name</label>
+          <input type="text" id="input-municipality" placeholder="e.g. Metro Manila City" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="input-email">Official Contact Email</label>
+          <input type="email" id="input-email" placeholder="logistics@municipality.gov" required>
+        </div>
+        
+        <div class="form-group">
+          <label for="input-notes">Primary Logistics Concerns</label>
+          <textarea id="input-notes" rows="3" placeholder="Describe current bottlenecks (e.g. food delivery delays, spreadsheet tracking issues)"></textarea>
+        </div>
+        
+        <button type="submit" class="modal-submit-btn">Request Integration Code</button>
+      </form>
+      
+      <!-- Success State -->
+      <div class="modal-success hidden" id="modal-success-state">
+        <div class="success-icon">✓</div>
+        <h4>Request Submitted</h4>
+        <p>Your municipal logistics analysis request has been logged. Our implementation team will contact your office within 24 hours.</p>
+        <button class="success-close-btn" id="btn-success-ok">Close Window</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Info Modal for Links -->
+  <div class="modal-overlay" id="modal-info">
+    <div class="modal-card info-card">
+      <button class="modal-close-btn" id="btn-close-info">✕</button>
+      <h3 class="modal-title" id="info-modal-title">Document View</h3>
+      <div class="info-modal-content" id="info-modal-content">
+        <!-- Dynamic content injected here -->
+      </div>
+      <button class="modal-submit-btn" id="btn-info-ok" style="margin-top: 25px;">Understood</button>
+    </div>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

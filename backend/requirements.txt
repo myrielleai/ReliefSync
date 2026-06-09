@@ -1,0 +1,33 @@
+# ReliefSync — Python Backend Dependencies
+#
+# IMPORTANT: This machine has MSYS2 Python AND Windows Python installed.
+# MSYS2 Python (C:\msys64) has SSL issues and no scikit-learn wheels.
+# ALWAYS use the Windows Python Launcher (py.exe) instead:
+#
+#   py -3.12 -m pip install -r requirements.txt   ← CORRECT
+#   python -m pip install -r requirements.txt      ← May fail (uses MSYS2)
+#
+# Run the Flask server the same way:
+#   py -3.12 backend/app.py
+#   py -3.12 model_training/train_model.py
+
+# Flask — The Python web framework that turns app.py into a web server
+flask==3.1.0
+
+# Flask-CORS — Adds Cross-Origin Resource Sharing headers so the browser
+# doesn't block our frontend from calling the Flask API
+flask-cors==5.0.1
+
+# Pandas — Data manipulation library (used in train_model.py to build the dataset)
+pandas==2.2.3
+
+# Scikit-learn — The Machine Learning library with LinearRegression, train_test_split, etc.
+scikit-learn==1.6.1
+
+# Joblib — Used to save (serialize) and load the trained model as a .pkl file.
+# Note: joblib is installed automatically with scikit-learn, listed here for clarity
+joblib==1.4.2
+
+# NumPy — Numerical computing library. Scikit-learn requires numpy arrays as input
+# and it's also auto-installed with scikit-learn, listed here for documentation
+numpy==2.2.6
