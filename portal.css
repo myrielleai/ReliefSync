@@ -37,14 +37,15 @@ body {
   min-height: 100vh;
   margin: 0;
   padding: 0;
-  overflow: hidden;
+  overflow: auto;
 }
 
 /* Split Pane Layout - Fills Viewport Natively */
 .split-pane {
   display: flex;
   width: 100vw;
-  height: 100vh;
+  min-height: 100vh;
+  height: auto;
 }
 
 /* 1. Left Sidebar Component */
@@ -304,14 +305,14 @@ body {
 /* 2. Main Workspace Component (Right Side) */
 .main-content {
   width: 75%;
-  height: 100%;
+  height: auto;
   background-color: var(--color-fill-light);
   padding: 40px 45px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   gap: 25px;
-  overflow-y: auto;
+  overflow-y: visible;
 }
 
 /* Row Layouts */
