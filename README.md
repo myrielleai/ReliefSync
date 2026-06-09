@@ -1,4 +1,4 @@
-# ReliefSync — Predictive Disaster Logistics Engine 🌀
+# ReliefSync — Predictive Disaster Logistics Engine
 
 [![Frontend on Vercel](https://img.shields.io/badge/Frontend-Vercel-black?logo=vercel)](https://vercel.com)
 [![Backend on Render](https://img.shields.io/badge/Backend-Render-blue?logo=render)](https://render.com)
@@ -9,7 +9,7 @@ ReliefSync is a **predictive disaster logistics engine** built for Philippine ty
 
 ---
 
-## 📋 Table of Contents
+## Table of Contents
 
 1. [Project Overview](#-project-overview)
 2. [Features](#-features)
@@ -24,7 +24,7 @@ ReliefSync is a **predictive disaster logistics engine** built for Philippine ty
 
 ---
 
-## 🎯 Project Overview
+## Project Overview
 
 ReliefSync simulates a real-world DSWD/LGU logistics coordination scenario during **Super Typhoon "Amihan"**. A relief officer can:
 
@@ -37,7 +37,7 @@ The ML backend is a **Linear Regression model** trained on 900 synthetic records
 
 ---
 
-## 🚀 Features
+## Features
 
 | Feature | Description |
 |---|---|
@@ -52,7 +52,7 @@ The ML backend is a **Linear Regression model** trained on 900 synthetic records
 
 ---
 
-## 🏗 Architecture
+## Architecture
 
 ```
 ReliefSync/
@@ -89,7 +89,7 @@ Browser (portal.js)
 
 ---
 
-## 💻 Running Locally
+## Running Locally
 
 > **Requirement:** Python 3.12 installed. Get it from [python.org](https://python.org/downloads/).
 >
@@ -161,7 +161,7 @@ Then open: [http://localhost:3000](http://localhost:3000)
 
 ---
 
-## 🧪 Testing the App
+## Testing the App
 
 ### Verify the Backend is Running
 
@@ -217,7 +217,7 @@ Expected response:
 
 ---
 
-## ☁️ Deploying to Vercel (Frontend Only)
+## Deploying to Vercel (Frontend Only)
 
 Vercel is a **static hosting platform** — it can only serve HTML, CSS, and JavaScript files. It **cannot** run Python or Flask.
 
@@ -239,7 +239,7 @@ The `vercel.json` at the root handles routing automatically. Your Vercel project
 
 ---
 
-## 🟦 Deploying the ML Backend to Render
+## Deploying the ML Backend to Render
 
 **Render** is the recommended platform for the Flask backend because it natively runs Python web servers for free.
 
@@ -294,7 +294,7 @@ Then commit and push — Vercel will automatically redeploy the frontend.
 
 ---
 
-## ⚖️ Vercel vs Render — Which to Use?
+## Vercel vs Render — Which to Use?
 
 | | Vercel | Render |
 |---|---|---|
@@ -326,7 +326,7 @@ Then commit and push — Vercel will automatically redeploy the frontend.
 
 ---
 
-## 🇵🇭 Data Sources
+## Data Sources
 
 ReliefSync's ML model is trained on **900 synthetic records derived from Philippine-specific disaster parameters**, not generic worldwide data.
 
@@ -341,7 +341,7 @@ ReliefSync's ML model is trained on **900 synthetic records derived from Philipp
 
 ---
 
-## 🛠 Tech Stack
+## Tech Stack
 
 | Layer | Technology |
 |---|---|
@@ -356,7 +356,7 @@ ReliefSync's ML model is trained on **900 synthetic records derived from Philipp
 
 ---
 
-## 👥 Team
+## Team
 
 Built for a hackathon by Team ReliefSync.
 - Frontend design & HTML/CSS system

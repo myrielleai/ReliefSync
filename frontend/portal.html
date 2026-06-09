@@ -14,7 +14,7 @@
 
   <!-- Active Crisis Event Banner -->
   <div class="crisis-banner">
-    ⚠️ ACTIVE EVENT: Super Typhoon "Amihan" — PAGASA Signal No. 4 | Expected Landfall in 12 Hours | Data as of 06/09/2026 14:30 PHT
+    ACTIVE EVENT: Super Typhoon "Amihan" — PAGASA Signal No. 4 | Expected Landfall in 12 Hours | Data as of 06/09/2026 14:30 PHT
   </div>
 
   <div class="split-pane">
@@ -33,7 +33,7 @@
 
         <!-- Quick Guide Button -->
         <button id="btn-open-guide" class="guide-btn" title="How to use this dashboard">
-          ❓ How to Use This Dashboard
+          How to Use This Dashboard
         </button>
 
         <!-- Controls Form -->
@@ -47,9 +47,9 @@
             </p>
             <div class="custom-select-wrapper">
               <select id="evac-center-select" name="evac-center">
-                <option value="brgy_172">Brgy. 172 Covered Court — 🔴 CRITICAL</option>
-                <option value="brgy_173">Brgy. 173 Gymnasium — 🟢 STABLE</option>
-                <option value="brgy_174">Brgy. 174 Elementary School — 🟡 WARNING</option>
+                <option value="brgy_172">Brgy. 172 Covered Court — CRITICAL</option>
+                <option value="brgy_173">Brgy. 173 Gymnasium — STABLE</option>
+                <option value="brgy_174">Brgy. 174 Elementary School — WARNING</option>
               </select>
             </div>
           </div>
@@ -73,24 +73,24 @@
               <label class="checkbox-label" for="category-water">
                 <input type="checkbox" id="category-water" name="categories" value="water" checked>
                 <span class="custom-checkbox"></span>
-                <span class="label-text">💧 Bottled Water</span>
+                <span class="label-text">Bottled Water</span>
               </label>
               <label class="checkbox-label" for="category-rice">
                 <input type="checkbox" id="category-rice" name="categories" value="rice" checked>
                 <span class="custom-checkbox"></span>
-                <span class="label-text">🌾 Rice Packs</span>
+                <span class="label-text">Rice Packs</span>
               </label>
               <label class="checkbox-label" for="category-medical">
                 <input type="checkbox" id="category-medical" name="categories" value="medical" checked>
                 <span class="custom-checkbox"></span>
-                <span class="label-text">🩹 Medical Kits</span>
+                <span class="label-text">Medical Kits</span>
               </label>
             </div>
           </div>
 
           <!-- Alert Level Legend -->
           <div class="legend-box">
-            <p class="legend-title">📊 Alert Level Guide</p>
+            <p class="legend-title">Alert Level Guide</p>
             <div class="legend-row">
               <span class="legend-dot" style="background:#ff4b4b"></span>
               <span><strong>CRITICAL</strong> — Stock &lt; 30% of 72h demand. Dispatch immediately.</span>
@@ -111,7 +111,7 @@
       <!-- Action Button -->
       <div class="sidebar-bottom">
         <button id="btn-generate-forecast" class="primary-btn">
-          <span class="btn-content">⚡ Generate 72-Hour Forecast</span>
+          <span class="btn-content">Generate 72-Hour Forecast</span>
           <span class="btn-loader hidden">
             <svg class="spinner" viewBox="0 0 50 50">
               <circle class="path" cx="25" cy="25" r="20" fill="none" stroke-width="5"></circle>
@@ -131,25 +131,25 @@
       <section class="dashboard-row row-status" id="row-status">
 
         <div class="status-card" id="card-population">
-          <span class="card-label">👥 Current Evacuee Population</span>
+          <span class="card-label">Current Evacuee Population</span>
           <span class="card-value" id="val-population">1,250</span>
           <div class="card-indicator">People currently registered</div>
         </div>
 
         <div class="status-card" id="card-alert">
-          <span class="card-label">🚨 Supply Status Level</span>
+          <span class="card-label">Supply Status Level</span>
           <span class="card-value alert-text" id="val-alert">CALCULATING...</span>
           <div class="card-indicator" id="alert-indicator-text">Analyzing stock vs. demand...</div>
         </div>
 
         <div class="status-card" id="card-signal">
-          <span class="card-label">🌀 PAGASA Typhoon Signal</span>
+          <span class="card-label">PAGASA Typhoon Signal</span>
           <span class="card-value" id="val-pagasa-signal">Signal No. 4</span>
           <div class="card-indicator">Affects required supply multiplier</div>
         </div>
 
         <div class="status-card" id="card-window">
-          <span class="card-label">🚚 Optimal Dispatch Window</span>
+          <span class="card-label">Optimal Dispatch Window</span>
           <span class="card-value" id="val-window">Within 4 Hours</span>
           <div class="card-indicator">Based on road accessibility forecast</div>
         </div>
@@ -162,7 +162,7 @@
 
           <div class="chart-header">
             <div>
-              <h2 class="section-title">📉 72-Hour Stock Depletion Forecast</h2>
+              <h2 class="section-title">72-Hour Stock Depletion Forecast</h2>
               <p class="chart-subtitle" id="chart-subtitle">
                 Each line shows how much stock remains over time if NO new supplies arrive.
                 When a line crosses the red dashed line, that item is in critical shortage.
@@ -210,7 +210,7 @@
               <line id="buffer-threshold-line" x1="80" y1="240" x2="950" y2="240" stroke-dasharray="6 4" />
               <g class="annotation-layer">
                 <rect x="715" y="225" width="225" height="20" rx="3" fill="#fff5f5" stroke="#ff4b4b" stroke-width="1" />
-                <text x="722" y="239" class="annotation-text">⚠ Critical Shortage Threshold</text>
+                <text x="722" y="239" class="annotation-text">Critical Shortage Threshold</text>
               </g>
 
               <!-- Axis titles -->
@@ -247,16 +247,16 @@
 
           <div class="manifest-header">
             <div>
-              <h2 class="section-title">📦 Actionable Packing Manifest</h2>
+              <h2 class="section-title">Actionable Packing Manifest</h2>
               <p class="manifest-subtitle">
                 This table tells you exactly what to load on the truck.
                 <strong>RECOMMENDED DISPATCH</strong> = what's missing from the camp right now.
               </p>
             </div>
             <div class="manifest-actions">
-              <button id="btn-ml-insights" class="secondary-btn">🧠 ML Insights</button>
-              <button id="btn-view-dataset" class="secondary-btn">📂 View Dataset</button>
-              <a href="warehouse.html" class="warehouse-link-btn" target="_blank">🚚 Load Truck ↗</a>
+              <button id="btn-ml-insights" class="secondary-btn">ML Insights</button>
+              <button id="btn-view-dataset" class="secondary-btn">View Dataset</button>
+              <a href="warehouse.html" class="warehouse-link-btn" target="_blank">Load Truck ↗</a>
             </div>
           </div>
 
@@ -274,7 +274,7 @@
               <tbody id="manifest-table-body">
                 <tr>
                   <td colspan="5" style="text-align:center;color:var(--color-text-muted);padding:30px;">
-                    Select a center and click <strong>⚡ Generate 72-Hour Forecast</strong> to load data.
+                    Select a center and click <strong>Generate 72-Hour Forecast</strong> to load data.
                   </td>
                 </tr>
               </tbody>
@@ -294,7 +294,7 @@
     <div class="modal-card modal-wide">
       <button class="modal-close-btn" id="btn-close-insights">✕</button>
       <div class="modal-header">
-        <h3 class="modal-title">🧠 ML Prediction Insights</h3>
+        <h3 class="modal-title">ML Prediction Insights</h3>
         <p class="modal-subtitle">Transparent math breakdown — exactly how the AI computed each number.</p>
       </div>
       <div class="insights-content" id="insights-content">
@@ -310,13 +310,13 @@
     <div class="modal-card modal-wide">
       <button class="modal-close-btn" id="btn-close-dataset">✕</button>
       <div class="modal-header">
-        <h3 class="modal-title">📂 Dataset & Data Sources</h3>
+        <h3 class="modal-title">Dataset & Data Sources</h3>
         <p class="modal-subtitle">Full transparency on the data powering ReliefSync's predictions.</p>
       </div>
       <div class="insights-content">
 
         <div class="dataset-section">
-          <h4>🇵🇭 Philippine Disaster Data Foundation</h4>
+          <h4>Philippine Disaster Data Foundation</h4>
           <p>ReliefSync's ML model was trained on <strong>900 synthetic records</strong> derived directly from Philippine-context disaster parameters, not generic global data. The parameters are sourced from:</p>
           <ul class="dataset-list">
             <li>
@@ -345,7 +345,7 @@
         </div>
 
         <div class="dataset-section" style="margin-top:20px;">
-          <h4>📊 Synthetic Training Dataset Structure</h4>
+          <h4>Synthetic Training Dataset Structure</h4>
           <p>900 records × 5 columns, generated with realistic Philippine storm distributions:</p>
           <table class="dataset-table">
             <thead>
@@ -362,14 +362,14 @@
         </div>
 
         <div class="dataset-section" style="margin-top:20px;padding:15px;background:#f0fdf4;border-radius:8px;border-left:4px solid #34C759;">
-          <h4>📈 Model Performance</h4>
+          <h4>Model Performance</h4>
           <p><strong>R² Score: 79.4%</strong> — The model explains ~79% of variation in relief demand.<br>
           <strong>MAE: ~1,216 units</strong> — On average, predictions are within ±1,216 units of actual need.<br>
           <strong>Algorithm:</strong> Linear Regression (scikit-learn), trained on 720 records, tested on 180.</p>
         </div>
 
         <div class="dataset-section" style="margin-top:20px;padding:15px;background:#fff8e1;border-radius:8px;border-left:4px solid #FF9500;">
-          <h4>⚠️ Disclaimer for Judges</h4>
+          <h4>Disclaimer for Judges</h4>
           <p>This is a <strong>hackathon prototype</strong>. The training data is <em>synthetic but Philippine-grounded</em> — derived from real NDRRMC/PAGASA parameters rather than an actual historical incident dataset. In a production system, this would be replaced with live NDRRMC incident reports, actual LGU stock inventories, and real historical consumption logs. The model architecture and API pipeline are production-ready.</p>
         </div>
 
@@ -384,7 +384,7 @@
     <div class="modal-card modal-wide">
       <button class="modal-close-btn" id="btn-close-guide">✕</button>
       <div class="modal-header">
-        <h3 class="modal-title">❓ Relief Officer Quick Guide</h3>
+        <h3 class="modal-title">Relief Officer Quick Guide</h3>
         <p class="modal-subtitle">How to use ReliefSync to make dispatch decisions during a typhoon.</p>
       </div>
       <div class="insights-content">
@@ -400,7 +400,7 @@
         <div class="guide-step">
           <div class="guide-step-num">2</div>
           <div class="guide-step-body">
-            <h4>Click "⚡ Generate 72-Hour Forecast"</h4>
+            <h4>Click "Generate 72-Hour Forecast"</h4>
             <p>ReliefSync's ML model analyzes the population, PAGASA storm signal, and supply type to predict how many units will be needed over the next 72 hours. This call goes to a local Python/Flask server running the AI model.</p>
           </div>
         </div>
@@ -409,9 +409,9 @@
           <div class="guide-step-num">3</div>
           <div class="guide-step-body">
             <h4>Read the Status Cards (Top Row)</h4>
-            <p><strong>🔴 CRITICAL</strong> = Less than 30% of needed supplies are on-site. Dispatch a truck <em>immediately</em>.<br>
-            <strong>🟡 WARNING</strong> = 30–60% covered. Dispatch today before roads become impassable.<br>
-            <strong>🟢 STABLE</strong> = Over 60% covered. Monitor and prepare for next cycle.</p>
+            <p><strong>CRITICAL</strong> = Less than 30% of needed supplies are on-site. Dispatch a truck <em>immediately</em>.<br>
+            <strong>WARNING</strong> = 30–60% covered. Dispatch today before roads become impassable.<br>
+            <strong>STABLE</strong> = Over 60% covered. Monitor and prepare for next cycle.</p>
           </div>
         </div>
 
@@ -435,7 +435,7 @@
           <div class="guide-step-num">6</div>
           <div class="guide-step-body">
             <h4>Launch the Warehouse Loading View</h4>
-            <p>Click <strong>"🚚 Load Truck ↗"</strong> to open the warehouse Kanban board. Drag supply cards from "To Load" → "In Progress" → "Loaded". Once all items are loaded, the dispatch button unlocks and you can confirm the truck has left.</p>
+            <p>Click <strong>"Load Truck ↗"</strong> to open the warehouse Kanban board. Drag supply cards from "To Load" → "In Progress" → "Loaded". Once all items are loaded, the dispatch button unlocks and you can confirm the truck has left.</p>
           </div>
         </div>
 
@@ -443,7 +443,7 @@
           <div class="guide-step-num">7</div>
           <div class="guide-step-body">
             <h4>View ML Insights for Transparency</h4>
-            <p>Click <strong>"🧠 ML Insights"</strong> to see a step-by-step breakdown of how the AI computed each number: Base consumption + PAGASA storm surge bonus = Total demand. This builds trust with LGU officials and NDRRMC coordinators.</p>
+            <p>Click <strong>"ML Insights"</strong> to see a step-by-step breakdown of how the AI computed each number: Base consumption + PAGASA storm surge bonus = Total demand. This builds trust with LGU officials and NDRRMC coordinators.</p>
           </div>
         </div>
 

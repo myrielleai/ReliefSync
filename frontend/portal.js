@@ -375,9 +375,9 @@ function renderTable(campData, mlResults, activeCategories) {
   }
 
   const categoryDisplayInfo = {
-    water:   { icon: "💧", name: "Bottled Water (1L)", unit: "units" },
-    rice:    { icon: "🌾", name: "Rice (5KG Sacks)",   unit: "sacks" },
-    medical: { icon: "🩹", name: "Medical Kits",       unit: "kits"  }
+    water:   { icon: "", name: "Bottled Water (1L)", unit: "units" },
+    rice:    { icon: "", name: "Rice (5KG Sacks)",   unit: "sacks" },
+    medical: { icon: "", name: "Medical Kits",       unit: "kits"  }
   };
 
   let anyRows = false;
@@ -403,14 +403,14 @@ function renderTable(campData, mlResults, activeCategories) {
 
     // Dispatch urgency label
     let urgencyLabel = "";
-    if (dispatch === 0)       urgencyLabel = `<span style="color:#34C759;font-weight:700;">✓ Sufficient</span>`;
-    else if (coveragePct < 30) urgencyLabel = `<span style="color:#ff4b4b;font-weight:700;">⚡ URGENT</span>`;
-    else                       urgencyLabel = `<span style="color:#FF9500;font-weight:700;">⚠ NEEDED</span>`;
+    if (dispatch === 0)       urgencyLabel = `<span style="color:#34C759;font-weight:700;">Sufficient</span>`;
+    else if (coveragePct < 30) urgencyLabel = `<span style="color:#ff4b4b;font-weight:700;">URGENT</span>`;
+    else                       urgencyLabel = `<span style="color:#FF9500;font-weight:700;">NEEDED</span>`;
 
     const row = document.createElement('tr');
     row.style.animationDelay = `${index * 0.1}s`;
     row.innerHTML = `
-      <td class="col-item">${info.icon} ${info.name}</td>
+      <td class="col-item">${info.name}</td>
       <td class="col-stock">${formatNum(stock)} ${info.unit}</td>
       <td class="col-demand">${formatNum(demand)} ${info.unit}</td>
       <td class="col-deficit">
@@ -421,7 +421,7 @@ function renderTable(campData, mlResults, activeCategories) {
         <span class="deficit-label">${coveragePct}% covered</span>
       </td>
       <td class="col-dispatch highlight-column">
-        ${dispatch > 0 ? `➕ ${formatNum(dispatch)} ${info.unit}` : `✓ No dispatch needed`}
+        ${dispatch > 0 ? `+ ${formatNum(dispatch)} ${info.unit}` : `No dispatch needed`}
         <br>${urgencyLabel}
       </td>
     `;
@@ -523,7 +523,7 @@ function renderInsightsModal() {
     </div>
   `;
 
-  const catLabels = { water: '💧 Water', rice: '🌾 Rice', medical: '🩹 Medicine' };
+  const catLabels = { water: 'Water', rice: 'Rice', medical: 'Medicine' };
 
   Object.keys(lastMLResults).forEach(cat => {
     const predicted    = lastMLResults[cat];
