@@ -4,7 +4,9 @@
  * Falls back to localStorage cache if backend is offline.
  */
 
-const ML_API = 'http://127.0.0.1:5000';
+const ML_API = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1' 
+    ? "http://127.0.0.1:5000" 
+    : "https://reliefsync-qlev.onrender.com";
 const CACHE_PREFIX = 'reliefync_public_cache_';
 
 const campDatabase = {
