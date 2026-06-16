@@ -503,7 +503,7 @@ body {
 
 .config-grid {
   display: grid;
-  grid-template-columns: 180px 1fr 1fr 2fr;
+  grid-template-columns: 280px 1fr 1fr 2fr;
   gap: 16px;
   align-items: start;
   transition: all 0.3s ease;
@@ -563,6 +563,7 @@ body {
   transition: all 0.2s;
   font-family: var(--font-sans);
   color: #666;
+  white-space: nowrap;
 }
 
 .type-btn.active {
