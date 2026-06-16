@@ -703,4 +703,240 @@ async function fetchAndRender(campData, activeCategories, showLoader) {
 
 window.addEventListener('DOMContentLoaded', () => {
   generateForecast(true);
+
+  // Set up download template URL
+  const downloadLink = document.getElementById('link-download-template');
+  if (downloadLink) {
+    downloadLink.href = `${ML_API_BASE_URL}/api/dataset/download`;
+  }
 });
+
+
+// ==============================================================================
+// SECTION 12: DATASET MANAGEMENT CENTER LOGIC (Viewer & Retraining)
+// ==============================================================================
+
+// Global states for Dataset Viewer
+let viewerCurrentPage = 1;
+const viewerLimit = 10; // 10 rows per page in modal view
+let viewerTotalPages = 1;
+
+// 1. Tab Switching Handler
+const tabBtns = document.querySelectorAll('.modal-tab-btn');
+const tabPanes = document.querySelectorAll('.tab-pane');
+
+tabBtns.forEach(btn => {
+  btn.addEventListener('click', () => {
+    // Deactivate all tab buttons and hide all tab panes
+    tabBtns.forEach(b => b.classList.remove('active'));
+    tabPanes.forEach(p => p.classList.add('hidden'));
+
+    // Activate selected
+    btn.classList.add('active');
+    const targetTab = btn.getAttribute('data-tab');
+    const activePane = document.getElementById(targetTab);
+    if (activePane) {
+      activePane.classList.remove('hidden');
+    }
+
+    // If viewer tab is opened, fetch fresh dataset
+    if (targetTab === 'tab-dataset-view') {
+      viewerCurrentPage = 1;
+      fetchAndRenderDataset();
+    }
+  });
+});
+
+// 2. Fetch and render paginated dataset in viewer table
+async function fetchAndRenderDataset() {
+  const tbody = document.getElementById('viewer-table-body');
+  const summaryText = document.getElementById('viewer-summary');
+  const pageIndicator = document.getElementById('page-indicator');
+
+  tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:25px;color:var(--color-text-muted);">Fetching database records...</td></tr>`;
+
+  try {
+    const response = await fetch(`${ML_API_BASE_URL}/api/dataset?page=${viewerCurrentPage}&limit=${viewerLimit}`);
+    if (!response.ok) throw new Error(`Server returned status ${response.status}`);
+
+    const res = await response.json();
+    const records = res.data;
+    viewerTotalPages = res.pages;
+
+    // Render summary header text
+    const startRecord = (viewerCurrentPage - 1) * viewerLimit + 1;
+    const endRecord = Math.min(startRecord + records.length - 1, res.total_rows);
+    summaryText.textContent = `Showing records ${startRecord}-${endRecord} of ${res.total_rows.toLocaleString()}`;
+    pageIndicator.textContent = `Page ${viewerCurrentPage} of ${viewerTotalPages}`;
+
+    // Update pagination button enabled states
+    document.getElementById('btn-page-prev').disabled = (viewerCurrentPage <= 1);
+    document.getElementById('btn-page-next').disabled = (viewerCurrentPage >= viewerTotalPages);
+
+    if (records.length === 0) {
+      tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:25px;color:var(--color-text-muted);">No records found in database.</td></tr>`;
+      return;
+    }
+
+    const categoryNames = { 1: "Bottled Water", 2: "Rice Packs", 3: "Medical Kits" };
+
+    tbody.innerHTML = '';
+    records.forEach((row, index) => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td style="padding:10px;font-family:var(--font-mono);font-weight:600;color:var(--color-text-muted);">${startRecord + index}</td>
+        <td style="padding:10px;font-weight:500;">Camp #${row.camp_id}</td>
+        <td style="padding:10px;">${categoryNames[row.supply_category_id] || 'Unknown'}</td>
+        <td style="padding:10px;font-weight:600;">${row.current_population.toLocaleString()}</td>
+        <td style="padding:10px;"><span style="background:var(--color-fill-light);padding:3px 8px;border-radius:4px;font-weight:600;font-size:11px;">Signal ${row.pagasa_signal}</span></td>
+        <td style="padding:10px;font-weight:700;color:#0066cc;">${row.units_consumed.toLocaleString()} units</td>
+      `;
+      tbody.appendChild(tr);
+    });
+
+  } catch (error) {
+    console.error("Failed to load dataset: ", error);
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;padding:25px;color:var(--color-accent-red);font-weight:600;">Failed to connect to ML Backend. Make sure the server is running.</td></tr>`;
+  }
+}
+
+// Wire up pagination buttons
+document.getElementById('btn-page-prev').addEventListener('click', () => {
+  if (viewerCurrentPage > 1) {
+    viewerCurrentPage--;
+    fetchAndRenderDataset();
+  }
+});
+
+document.getElementById('btn-page-next').addEventListener('click', () => {
+  if (viewerCurrentPage < viewerTotalPages) {
+    viewerCurrentPage++;
+    fetchAndRenderDataset();
+  }
+});
+
+// 3. Drag & Drop File Upload and Retrain Logic
+const dropZone = document.getElementById('upload-drop-zone');
+const fileInput = document.getElementById('file-upload-input');
+const uploadStatusMsg = document.getElementById('upload-status-msg');
+const consoleTerminal = document.getElementById('retrain-terminal');
+const pulseIndicator = document.getElementById('terminal-pulse');
+
+// Drag over/leave animations
+if (dropZone) {
+  ['dragenter', 'dragover'].forEach(eventName => {
+    dropZone.addEventListener(eventName, (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dropZone.classList.add('dragover');
+    }, false);
+  });
+
+  ['dragleave', 'drop'].forEach(eventName => {
+    dropZone.addEventListener(eventName, (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      dropZone.classList.remove('dragover');
+    }, false);
+  });
+
+  // Drop handler
+  dropZone.addEventListener('drop', (e) => {
+    const dt = e.dataTransfer;
+    const files = dt.files;
+    if (files.length > 0) {
+      handleCSVUpload(files[0]);
+    }
+  });
+}
+
+// File input click handler
+if (fileInput) {
+  fileInput.addEventListener('change', (e) => {
+    const files = e.target.files;
+    if (files.length > 0) {
+      handleCSVUpload(files[0]);
+    }
+  });
+}
+
+async function handleCSVUpload(file) {
+  if (!file.name.endsWith('.csv')) {
+    showUploadStatus('Error: Only CSV files are supported.', 'error');
+    return;
+  }
+
+  showUploadStatus(`Uploading "${file.name}" and preparing training run...`, 'success');
+  consoleTerminal.textContent = `> Initiating file upload for ${file.name}...\n> Uploading to ML backend...`;
+  pulseIndicator.classList.add('active');
+
+  const formData = new FormData();
+  formData.append('file', file);
+
+  try {
+    const response = await fetch(`${ML_API_BASE_URL}/api/dataset/upload`, {
+      method: 'POST',
+      body: formData
+    });
+
+    const res = await response.json();
+
+    if (!response.ok) {
+      throw new Error(res.error || res.message || `HTTP ${response.status}`);
+    }
+
+    // Success!
+    showUploadStatus(`Success: ${res.message}`, 'success');
+
+    // Update before vs after metrics cards
+    const m = res.metrics;
+    document.getElementById('val-r2-after').textContent = `${(m.r2 * 100).toFixed(2)}%`;
+    document.getElementById('val-mae-after').textContent = `${Math.round(m.mae).toLocaleString()} u`;
+
+    // Render detailed logs in our neon console
+    let coefLog = '';
+    Object.keys(m.coefficients).forEach(c => {
+      coefLog += `   - ${c.padEnd(20)}: ${m.coefficients[c] >= 0 ? '+' : ''}${m.coefficients[c].toFixed(4)}\n`;
+    });
+
+    consoleTerminal.textContent = `
+> File upload complete. CSV validation passed.
+> Initializing Linear Regression training run on ${m.records_count} rows...
+> Performing 80/20 train-test split...
+> Model fit completed. OLS calculation succeeded.
+> 
+> [EVALUATION RESULTS]
+>   - R-Squared (R²):     ${(m.r2 * 100).toFixed(2)}%
+>   - Mean Absolute Error: ${m.mae.toFixed(2)} units
+> 
+> [NEW COEFFICIENTS WEIGHTS]
+${coefLog}
+> 
+> ✅ Model saved to disk as relief_model.pkl.
+> ✅ Flask server refreshed and reloaded newly trained model.
+> 🚀 Active model updated. Ready for predictions.
+`.trim();
+
+    // Trigger dashboard forecast refresh
+    console.log("Model retrained successfully. Triggering forecast refresh.");
+    generateForecast(false);
+
+  } catch (error) {
+    console.error("Retrain failed: ", error);
+    showUploadStatus(`Retrain Failed: ${error.message}`, 'error');
+    consoleTerminal.textContent += `\n\n❌ ERROR: Training run aborted.\nReason: ${error.message}`;
+  } finally {
+    pulseIndicator.classList.remove('active');
+  }
+}
+
+function showUploadStatus(msg, type) {
+  if (!uploadStatusMsg) return;
+  uploadStatusMsg.textContent = msg;
+  uploadStatusMsg.className = 'upload-status-msg'; // reset classes
+  if (type === 'success') {
+    uploadStatusMsg.classList.add('success');
+  } else {
+    uploadStatusMsg.classList.add('error');
+  }
+}

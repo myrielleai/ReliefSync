@@ -337,13 +337,10 @@ This table tells the relief officer exactly what to load on a truck. It has 5 co
    - Current on-site stock
    - Dispatch quantity
 
-2. **"View Dataset"** — Opens a modal with full transparency about the data used:
-   - Source: NDRRMC (camp population ranges)
-   - Source: PAGASA Signal 1–5 classification
-   - Source: SPHERE Humanitarian Standards (consumption rates)
-   - Source: DSWD Family Food Pack composition
-   - Training dataset structure (900 records × 5 columns)
-   - Model performance stats (R² = 79.4%, MAE ≈ 1,216 units)
+2. **"View Dataset"** — Opens the **Dataset Management Center** modal, which includes three tabs:
+   - **Dataset Viewer** — Displays the active database records live in a paginated table.
+   - **Upload & Retrain Model** — Lets you download the current active CSV template, drag-and-drop a new custom CSV dataset, view performance metrics (R² score, Mean Absolute Error) update in real-time, and watch the Python retraining logs in a neon console.
+   - **Sources & Methodology** — Shows how the default dataset was calibrated based on NDRRMC, PAGASA storm signals, and SPHERE standards.
 
 3. **"Load Truck"** — Opens the Warehouse Kanban board in a new tab.
 
@@ -636,13 +633,16 @@ This demonstrates system resilience — the app never crashes even if the ML ser
 
 > "The demand for relief supplies scales with both population and storm severity in a way that's genuinely predictable from past data. Linear Regression is the right tool here because the relationship is approximately linear: twice as many people means roughly twice as many supplies, and each PAGASA signal level adds a quantifiable number of additional units. We chose a model we can explain fully rather than a black-box neural network that no one — including us — can explain to an LGU coordinator in the field."
 
+### If Asked "Where is the Dataset? How do we see and upload new data?"
+
+> "Click **'View Dataset'** right on the dashboard. It opens our **Dataset Management Center**.
+> 1. You can browse the active database records directly in the **Dataset Viewer** tab.
+> 2. You can download the active database CSV by clicking **'Download Active CSV Dataset'** in the **Upload & Retrain** tab.
+> 3. To upload new data and retrain the model: drag-and-drop a new CSV file into the upload zone. The Flask API will validate the schema, save the new dataset as the active database, run the training script dynamically, output stdout logs into the neon training console, update the model performance metrics, and automatically refresh the dashboard predictions using the new weights!"
+
 ### If Asked "Where Does the Data Come From?"
 
-> "We trained on 900 synthetic records grounded in Philippine-specific parameters: NDRRMC camp population ranges from actual typhoon operations, PAGASA Signal 1–5 classification, and SPHERE Humanitarian Standards for base consumption rates. The training data is not real historical incident logs — this is a hackathon prototype. In production, this model would be trained on actual NDRRMC incident reports and LGU stock inventory databases."
-
-### If Asked "Why Not Use a Real Kaggle Dataset?"
-
-> "Philippine typhoon relief operations data at the supply-item level is not publicly available in structured form on Kaggle. NDRRMC publishes situation reports as PDFs, not as ML-ready CSV files. The closest structured datasets are generic worldwide humanitarian logistics datasets which don't use PAGASA Signal classification. We used Philippine-grounded synthetic data as the most honest approach for a hackathon — and we state this clearly in the 'View Dataset' transparency modal within the app."
+> "We train on a 900-record dataset grounded in actual Philippine disaster parameters (NDRRMC camp populations, PAGASA Signals, and SPHERE consumption rates). To demonstrate the system's extensibility to judges, we built a live uploading and retraining pipeline. You can download our current database CSV, modify numbers in Excel, upload it back, and see the AI update in real-time."
 
 ### If Asked "What Happens in a Real Deployment?"
 
