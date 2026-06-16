@@ -88,7 +88,11 @@ const timeLabels = ["Arrival", "12h", "24h", "36h", "48h", "60h", "72h"];
 // SECTION 2: ML BACKEND CONFIGURATION
 // ==============================================================================
 
-const ML_API_BASE_URL = "https://reliefsync-qlev.onrender.com";
+// Local Development Backend URL (allows testing custom dataset uploads and retraining locally)
+const ML_API_BASE_URL = "http://127.0.0.1:5000";
+
+// Deployed Production Backend URL
+// const ML_API_BASE_URL = "https://reliefsync-qlev.onrender.com";
 
 
 // ==============================================================================
