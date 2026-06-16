@@ -580,6 +580,9 @@ const btnCloseDataset = document.getElementById('btn-close-dataset');
 if (btnDataset) {
   btnDataset.addEventListener('click', () => {
     modalDataset.classList.remove('hidden');
+    // Trigger initial dataset fetch when modal is opened
+    viewerCurrentPage = 1;
+    fetchAndRenderDataset();
   });
 }
 if (btnCloseDataset) {
