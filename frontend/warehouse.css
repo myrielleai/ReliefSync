@@ -72,27 +72,82 @@ body {
 /* 2. Centerpiece Loading Manifest */
 .manifest-content {
   flex-grow: 1;
-  padding: 50px 40px;
+  padding: 28px 40px 20px;
   max-width: 1400px;
   width: 100%;
   margin: 0 auto;
 }
 
-/* KANBAN BOARD STYLES */
-.checklist-header {
-  font-size: 28px;
+/* ROUTING MAP STYLES */
+.routing-section {
+  background-color: #f5f5f5;
+  border: var(--border-width-heavy) solid var(--color-border-thick);
+  border-radius: 8px;
+  margin-bottom: 20px;
+  padding: 16px 20px;
+}
+
+.routing-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: var(--border-width-medium) solid var(--color-border-thick);
+  padding-bottom: 15px;
+}
+
+.section-title {
+  font-size: 24px;
   font-weight: 900;
   letter-spacing: 1px;
-  margin-bottom: 30px;
+}
+
+.route-stats {
+  display: flex;
+  gap: 30px;
+}
+
+.stat-box {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+}
+
+.stat-label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+}
+
+.stat-value {
+  font-size: 20px;
+  font-weight: 900;
+  color: var(--color-text-dark);
+}
+
+.dispatch-map {
+  width: 100%;
+  height: 280px;
+  border: var(--border-width-medium) solid var(--color-border-thick);
+  border-radius: 4px;
+  background-color: #eaeaea;
+}
+
+.checklist-header {
+  font-size: 20px;
+  font-weight: 900;
+  letter-spacing: 0.5px;
+  margin-bottom: 14px;
   text-transform: uppercase;
   border-bottom: var(--border-width-medium) solid #000000;
-  padding-bottom: 10px;
+  padding-bottom: 8px;
 }
 
 .kanban-board {
   display: flex;
-  gap: 30px;
-  min-height: 500px;
+  gap: 20px;
+  min-height: 280px;
 }
 
 .kanban-column {
@@ -105,13 +160,15 @@ body {
 }
 
 .kanban-title {
-  padding: 20px;
-  font-size: 20px;
+  padding: 12px 16px;
+  font-size: 14px;
   font-weight: 900;
   text-align: center;
   border-bottom: var(--border-width-medium) solid var(--color-border-thick);
   background-color: #ffffff;
   border-radius: 4px 4px 0 0;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
 }
 
 .kanban-dropzone {
@@ -149,41 +206,44 @@ body {
 }
 
 .item-name {
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 800;
   display: block;
-  margin-bottom: 8px;
+  margin-bottom: 4px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
 }
 
 .load-quantity {
-  font-size: 24px;
+  font-size: 18px;
   font-weight: 900;
   color: var(--color-text-dark);
 }
 
-
 /* 3. Bottom Action Tray */
 .action-tray {
-  padding: 40px;
+  padding: 20px 40px;
   border-top: var(--border-width-heavy) solid var(--color-border-thick);
   background-color: #ffffff;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 30px;
+  grid-template-columns: auto 1fr auto;
+  gap: 20px;
+  align-items: center;
 }
 
 /* Buttons */
 .secondary-action-btn,
 .primary-action-btn {
   font-family: var(--font-sans);
-  font-size: 20px;
-  font-weight: 900;
+  font-size: 14px;
+  font-weight: 800;
   text-transform: uppercase;
-  padding: 24px 30px;
+  padding: 14px 24px;
   cursor: pointer;
   transition: all var(--transition-fast);
   border: var(--border-width-heavy) solid var(--color-border-thick);
   border-radius: 8px;
+  white-space: nowrap;
 }
 
 .secondary-action-btn {
@@ -365,3 +425,335 @@ body {
 .hidden {
   display: none !important;
 }
+
+/* ─── BANNER ADDITIONS ─────────────────────────────── */
+.banner-back {
+  color: rgba(255,255,255,0.5);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 600;
+  margin-right: 16px;
+  transition: color 0.2s;
+}
+.banner-back:hover { color: #fff; }
+
+.banner-right { display: flex; align-items: center; gap: 10px; }
+
+.dispatch-type-badge {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+  background: #1a3a8f;
+  color: #fff;
+  padding: 4px 10px;
+  border-radius: 12px;
+}
+
+/* ─── MISSION CONFIG PANEL ─────────────────────────── */
+.mission-config-panel {
+  background: #fff;
+  border-bottom: 2px solid #000;
+  padding: 20px 40px;
+}
+
+.config-panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 18px;
+}
+
+.config-title-group {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.config-icon { font-size: 22px; margin-top: 2px; }
+
+.config-title {
+  font-size: 16px;
+  font-weight: 800;
+  color: #000;
+  margin-bottom: 3px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.config-subtitle {
+  font-size: 12px;
+  color: #666;
+  font-weight: 400;
+}
+
+.config-collapse-btn {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 5px 12px;
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  transition: background 0.2s;
+}
+.config-collapse-btn:hover { background: #e5e5e5; }
+
+.config-grid {
+  display: grid;
+  grid-template-columns: 180px 1fr 1fr 2fr;
+  gap: 16px;
+  align-items: start;
+  transition: all 0.3s ease;
+}
+
+.config-grid.collapsed {
+  display: none;
+}
+
+.config-field { display: flex; flex-direction: column; gap: 8px; }
+.config-field-wide { grid-column: span 1; }
+
+.config-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  color: #555;
+}
+
+.config-select-wrap { position: relative; }
+.config-select {
+  width: 100%;
+  padding: 10px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #000;
+  background: #f8f8f8;
+  border: 1.5px solid #ccc;
+  border-radius: 8px;
+  appearance: none;
+  cursor: pointer;
+  transition: border-color 0.2s;
+  font-family: var(--font-sans);
+}
+.config-select:focus { outline: none; border-color: #1a3a8f; background: #fff; }
+
+/* Dispatch Type Toggle */
+.dispatch-type-toggle {
+  display: flex;
+  gap: 8px;
+}
+
+.type-btn {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  justify-content: center;
+  padding: 10px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  border: 2px solid #ddd;
+  border-radius: 8px;
+  background: #f8f8f8;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: var(--font-sans);
+  color: #666;
+}
+
+.type-btn.active {
+  background: #000;
+  border-color: #000;
+  color: #fff;
+}
+
+.type-btn:hover:not(.active) {
+  border-color: #999;
+  background: #eee;
+}
+
+.type-icon { font-size: 14px; }
+
+/* Surplus Preview Strip */
+.surplus-preview {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-top: 16px;
+  padding: 12px 16px;
+  background: #f3e8ff;
+  border: 1.5px solid #c4b5fd;
+  border-radius: 10px;
+}
+
+.surplus-preview.collapsed { display: none; }
+
+.surplus-preview-icon { font-size: 20px; }
+
+.surplus-preview-body { display: flex; flex-direction: column; gap: 2px; }
+
+.surplus-preview-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #7c3aed;
+}
+
+.surplus-preview-item {
+  font-size: 14px;
+  font-weight: 700;
+  color: #4c1d95;
+}
+
+/* ─── TRUCK SELECTOR ────────────────────────────────── */
+.truck-selector {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+}
+
+.truck-card {
+  border: 2px solid #e5e5e5;
+  border-radius: 10px;
+  padding: 12px;
+  background: #fff;
+  transition: all 0.2s;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.truck-card:hover { border-color: #999; }
+
+.truck-card.truck-selected {
+  border-color: #000;
+  background: #f5f5f5;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+.truck-card-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.truck-label {
+  font-size: 13px;
+  font-weight: 800;
+  color: #000;
+  text-transform: uppercase;
+}
+
+.truck-status-tag {
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 10px;
+  white-space: nowrap;
+}
+
+.truck-status-available  { background: #dcfce7; color: #15803d; }
+.truck-status-en_route   { background: #fef9c3; color: #a16207; }
+.truck-status-unloading  { background: #fee2e2; color: #b91c1c; }
+
+.truck-card-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  font-size: 11px;
+  color: #666;
+}
+
+.truck-assign-btn {
+  margin-top: 4px;
+  padding: 5px 10px;
+  font-size: 11px;
+  font-weight: 700;
+  background: #000;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.2s;
+  font-family: var(--font-sans);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.truck-assign-btn:hover { background: #1a3a8f; transform: translateY(-1px); }
+
+.truck-unavailable-note {
+  font-size: 11px;
+  color: #b91c1c;
+  font-style: italic;
+  margin-top: 4px;
+}
+
+/* ─── KANBAN HEADER ROW ────────────────────────────── */
+.kanban-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 40px;
+  margin-top: 8px;
+  margin-bottom: 4px;
+}
+
+.kanban-meta {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1a3a8f;
+}
+
+/* Kanban count badges */
+.kanban-count {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  background: #000;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  border-radius: 50%;
+  margin-left: 6px;
+  vertical-align: middle;
+}
+
+/* ─── DISPATCH STATUS TEXT ─────────────────────────── */
+.dispatch-status-text {
+  font-size: 12px;
+  font-weight: 600;
+  color: #555;
+  text-align: center;
+  flex: 1;
+}
+
+.success-actions {
+  display: flex;
+  gap: 14px;
+  justify-content: center;
+  margin-top: 16px;
+  flex-wrap: wrap;
+}
+
+.new-mission-btn {
+  padding: 12px 28px;
+  font-size: 14px;
+  font-weight: 700;
+  background: transparent;
+  color: #fff;
+  border: 2px solid rgba(255,255,255,0.4);
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  transition: all 0.2s;
+}
+.new-mission-btn:hover { background: rgba(255,255,255,0.1); }

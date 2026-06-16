@@ -5,87 +5,191 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>ReliefSync — Warehouse Execution View</title>
   <meta name="description" content="Supply depot loading checklist and dispatch manager.">
-  <!-- Google Fonts: Inter -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@700;800;900&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
   <link rel="stylesheet" href="warehouse.css">
 </head>
 <body>
 
-  <!-- Main Container -->
   <div class="warehouse-container">
-    
-    <!-- 1. Top Status Banner -->
+
+    <!-- ═══ TOP STATUS BANNER ═══ -->
     <header class="status-banner">
-      <div class="banner-left">ReliefSync // Warehouse Execution</div>
+      <div class="banner-left">
+        <a href="portal.html" class="banner-back">← Portal</a>
+        ReliefSync // Warehouse Execution
+      </div>
       <div class="banner-right">
-        <span class="truck-badge">Target: Brgy. 172 Covered Court - TRUCK #1</span>
+        <span class="truck-badge" id="banner-truck-badge">TRUCK #1 — Unassigned</span>
+        <span class="dispatch-type-badge" id="banner-type-badge">FULL DISPATCH</span>
       </div>
     </header>
 
-    <!-- 2. Centerpiece Loading Kanban Board -->
-    <main class="manifest-content">
-      <h2 class="checklist-header">LOADING KANBAN BOARD</h2>
-      
-      <div class="kanban-board">
-        
-        <!-- Column 1: Pending -->
-        <div class="kanban-column">
-          <h3 class="kanban-title">TO LOAD</h3>
-          <div class="kanban-dropzone" id="zone-pending">
-            <div class="kanban-card" draggable="true" id="card-water">
-              <span class="item-name">BOTTLED WATER (1L)</span>
-              <span class="load-quantity">2,950 UNITS</span>
-            </div>
-            <div class="kanban-card" draggable="true" id="card-rice">
-              <span class="item-name">RICE (5KG)</span>
-              <span class="load-quantity">850 PACKS</span>
-            </div>
-            <div class="kanban-card" draggable="true" id="card-medical">
-              <span class="item-name">MEDICAL KITS</span>
-              <span class="load-quantity">95 KITS</span>
-            </div>
+    <!-- ═══ MISSION CONFIGURATION PANEL ═══ -->
+    <div class="mission-config-panel" id="mission-config-panel">
+      <div class="config-panel-header">
+        <div class="config-title-group">
+          <span class="config-icon">⚙️</span>
+          <div>
+            <h2 class="config-title">Mission Configuration</h2>
+            <p class="config-subtitle">Set the dispatch type, origin, destination, and assign a truck before loading.</p>
+          </div>
+        </div>
+        <button class="config-collapse-btn" id="btn-collapse-config">▲ Collapse</button>
+      </div>
+
+      <div class="config-grid" id="config-grid">
+
+        <!-- Dispatch Type -->
+        <div class="config-field">
+          <label class="config-label">Dispatch Type</label>
+          <div class="dispatch-type-toggle">
+            <button class="type-btn active" id="type-btn-manifest" data-type="manifest">
+              <span class="type-icon">📦</span>
+              <span>Full Manifest</span>
+            </button>
+            <button class="type-btn" id="type-btn-surplus" data-type="surplus">
+              <span class="type-icon">🔄</span>
+              <span>Surplus Transfer</span>
+            </button>
           </div>
         </div>
 
-        <!-- Column 2: In Progress -->
-        <div class="kanban-column">
-          <h3 class="kanban-title">LOADING (IN PROGRESS)</h3>
-          <div class="kanban-dropzone" id="zone-loading">
-            <!-- Drop area -->
+        <!-- From -->
+        <div class="config-field">
+          <label class="config-label" for="from-select">From (Origin)</label>
+          <div class="config-select-wrap">
+            <select id="from-select" class="config-select">
+              <option value="depot_central">🏭 Central Depot — Quezon City</option>
+              <option value="depot_north">🏭 North Depot — Caloocan North</option>
+              <option value="brgy_172">🏕 Brgy. 172 Covered Court</option>
+              <option value="brgy_173">🏕 Brgy. 173 Gymnasium</option>
+              <option value="brgy_174">🏕 Brgy. 174 Elementary School</option>
+            </select>
           </div>
+        </div>
+
+        <!-- To -->
+        <div class="config-field">
+          <label class="config-label" for="to-select">To (Destination)</label>
+          <div class="config-select-wrap">
+            <select id="to-select" class="config-select">
+              <option value="brgy_172">📍 Brgy. 172 Covered Court — CRITICAL</option>
+              <option value="brgy_173">📍 Brgy. 173 Gymnasium — STABLE</option>
+              <option value="brgy_174">📍 Brgy. 174 Elementary School — WARNING</option>
+            </select>
+          </div>
+        </div>
+
+        <!-- Truck Selector -->
+        <div class="config-field config-field-wide">
+          <label class="config-label">Available Dispatch Units (Click to Assign)</label>
+          <div class="truck-selector" id="truck-selector">
+            <!-- Rendered by JS -->
+          </div>
+        </div>
+
+      </div><!-- /config-grid -->
+
+      <!-- Surplus Item Preview (shown only in surplus mode) -->
+      <div class="surplus-preview hidden" id="surplus-preview">
+        <div class="surplus-preview-icon">🔄</div>
+        <div class="surplus-preview-body">
+          <div class="surplus-preview-label">Surplus Transfer Cargo</div>
+          <div class="surplus-preview-item" id="surplus-preview-text">—</div>
+        </div>
+      </div>
+
+    </div><!-- /mission-config-panel -->
+
+    <!-- ═══ MAIN WORKSPACE ═══ -->
+    <main class="manifest-content">
+
+      <!-- Live Routing Section -->
+      <div class="routing-section">
+        <div class="routing-header">
+          <h2 class="section-title">LIVE DISPATCH ROUTE</h2>
+          <div class="route-stats">
+            <div class="stat-box">
+              <span class="stat-label">Estimated Travel Time</span>
+              <span class="stat-value" id="travel-time-val">Calculating...</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-label">Distance</span>
+              <span class="stat-value" id="travel-dist-val">-- km</span>
+            </div>
+            <div class="stat-box">
+              <span class="stat-label">Assigned Unit</span>
+              <span class="stat-value" id="assigned-unit-val">None</span>
+            </div>
+          </div>
+        </div>
+        <div id="dispatch-map" class="dispatch-map"></div>
+      </div>
+
+      <!-- Kanban Board -->
+      <div class="kanban-header-row">
+        <h2 class="checklist-header">LOADING KANBAN BOARD</h2>
+        <div class="kanban-meta" id="kanban-meta">
+          <span id="kanban-route-label">—</span>
+        </div>
+      </div>
+
+      <div class="kanban-board">
+
+        <!-- Column 1: To Load -->
+        <div class="kanban-column">
+          <h3 class="kanban-title">
+            TO LOAD
+            <span class="kanban-count" id="count-pending">0</span>
+          </h3>
+          <div class="kanban-dropzone" id="zone-pending">
+            <!-- Populated by JS -->
+          </div>
+        </div>
+
+        <!-- Column 2: Loading -->
+        <div class="kanban-column">
+          <h3 class="kanban-title">
+            LOADING (IN PROGRESS)
+            <span class="kanban-count" id="count-loading">0</span>
+          </h3>
+          <div class="kanban-dropzone" id="zone-loading"></div>
         </div>
 
         <!-- Column 3: Loaded -->
         <div class="kanban-column">
-          <h3 class="kanban-title">LOADED (ON TRUCK)</h3>
-          <div class="kanban-dropzone" id="zone-loaded">
-            <!-- Drop area -->
-          </div>
+          <h3 class="kanban-title">
+            LOADED (ON TRUCK)
+            <span class="kanban-count" id="count-loaded">0</span>
+          </h3>
+          <div class="kanban-dropzone" id="zone-loaded"></div>
         </div>
 
-      </div>
+      </div><!-- /kanban-board -->
+
     </main>
 
-    <!-- 3. Bottom Action Tray -->
+    <!-- ═══ BOTTOM ACTION TRAY ═══ -->
     <footer class="action-tray">
-      <!-- Left Utility Button -->
       <button id="btn-print-tag" class="secondary-action-btn">
-        🖨️ Print Physical Waybill & Loading Tag
+        🖨️ Print Physical Waybill &amp; Loading Tag
       </button>
-
-      <!-- Right Dispatch Button Container -->
+      <div class="dispatch-status-text" id="dispatch-status-text">
+        Move all items to "LOADED" to unlock dispatch.
+      </div>
       <div class="dispatch-container">
         <button id="btn-dispatch-truck" class="primary-action-btn" disabled>
-          🚚 CONFIRM LOAD & DISPATCH TRUCK
+          🚚 CONFIRM LOAD &amp; DISPATCH TRUCK
         </button>
       </div>
     </footer>
 
-  </div>
+  </div><!-- /warehouse-container -->
 
-  <!-- Popup alerts/toasts for Waybill printing -->
+  <!-- Waybill Toast -->
   <div class="toast-notification hidden" id="waybill-toast">
     <div class="toast-icon">🖨️</div>
     <div class="toast-body">
@@ -93,29 +197,23 @@
     </div>
   </div>
 
-  <!-- Full-screen dispatch success screen -->
+  <!-- Dispatch Success Overlay -->
   <div class="success-screen-overlay hidden" id="dispatch-success-overlay">
     <div class="success-card">
       <div class="success-icon">🚚</div>
-      <h1 class="success-title">TRUCK #1 DISPATCHED</h1>
-      
-      <div class="dispatch-receipt">
-        <p><strong>Destination:</strong> Brgy. 172 Covered Court</p>
-        <p><strong>Cargo Manifest:</strong></p>
-        <ul>
-          <li>2,950 Units of Bottled Water (1L)</li>
-          <li>850 Packs of Rice (5KG)</li>
-          <li>95 Medical Kits</li>
-        </ul>
-        <p class="ledger-tag">Transaction locked to LGU Disaster Ledger. Ref: <strong>#TX-8472901-M</strong></p>
+      <h1 class="success-title" id="success-truck-title">TRUCK #1 DISPATCHED</h1>
+      <div class="dispatch-receipt" id="dispatch-receipt-body">
+        <!-- Populated by JS -->
       </div>
-
-      <button id="btn-return-portal" class="return-portal-btn">
-        Return to Dispatch Portal
-      </button>
+      <div class="success-actions">
+        <button id="btn-return-portal" class="return-portal-btn">Return to Dispatch Portal</button>
+        <button id="btn-new-mission" class="new-mission-btn">New Mission</button>
+      </div>
     </div>
   </div>
 
+  <!-- Leaflet JS -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
   <script src="warehouse.js"></script>
 </body>
 </html>

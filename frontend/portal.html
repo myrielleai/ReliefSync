@@ -242,7 +242,7 @@
               </g>
 
               <!-- Axis titles -->
-              <text x="35" y="165" class="axis-title y-axis-title" transform="rotate(-90 35 165)">Units Remaining in Stock</text>
+              <text x="35" y="165" class="axis-title y-axis-title" transform="rotate(-90 35 165)">% of 72h Demand Remaining</text>
               <text x="515" y="315" class="axis-title x-axis-title">Hours Since Typhoon Landfall (without new resupply)</text>
 
               <!-- Y-Axis tick labels (updated by JS auto-scaler) -->
@@ -309,6 +309,36 @@
             </table>
           </div>
 
+        </div>
+      </section>
+
+      <!-- ── ROW D: Dispatch & Fleet Log ── -->
+      <section class="dashboard-row row-trucklog" id="row-trucklog">
+        <div class="trucklog-container-box">
+          <div class="manifest-header">
+            <div>
+              <h2 class="section-title">Dispatch & Fleet Log</h2>
+              <p class="manifest-subtitle">Real-time record of all dispatched trucks and surplus transfers during this operation.</p>
+            </div>
+          </div>
+          <div class="table-wrapper">
+            <table class="manifest-table" id="truck-log-table">
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>Item / Cargo</th>
+                  <th>Quantity</th>
+                  <th>From</th>
+                  <th>To</th>
+                  <th>Time</th>
+                  <th>Waybill</th>
+                </tr>
+              </thead>
+              <tbody id="truck-log-body">
+                <tr><td colspan="6" style="text-align:center;padding:20px;color:var(--color-text-muted);">Loading log...</td></tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </section>
 
@@ -577,6 +607,60 @@
 
       </div>
     </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       MODAL: Find Surplus Sources
+  ════════════════════════════════════════════════════ -->
+  <div class="modal-overlay hidden" id="modal-find-sources">
+    <div class="modal-card" style="max-width:520px;">
+      <button class="modal-close-btn" id="btn-close-sources">✕</button>
+      <div class="modal-header">
+        <h3 class="modal-title">🔍 Find Surplus Sources</h3>
+        <p class="modal-subtitle">Searching all active camps for available surplus of <strong id="sources-item-name"></strong> that can be sent to <strong id="sources-needed-camp"></strong>.</p>
+      </div>
+      <div id="sources-results-list" style="padding:16px 0;display:flex;flex-direction:column;gap:12px;">
+        <!-- Populated by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════════════════════
+       MODAL: Surplus Allocation
+  ════════════════════════════════════════════════════ -->
+  <div class="modal-overlay hidden" id="modal-surplus">
+    <div class="modal-card" style="max-width:480px;">
+      <button class="modal-close-btn" id="btn-close-surplus">✕</button>
+      <div class="modal-header">
+        <h3 class="modal-title">Allocate Surplus Stock</h3>
+        <p class="modal-subtitle">Redistribute excess supplies from this camp to another barangay in need.</p>
+      </div>
+      <div style="padding:20px 0;">
+        <div style="background:rgba(124,58,237,0.08);border:1px solid rgba(124,58,237,0.3);border-radius:10px;padding:16px;margin-bottom:20px;">
+          <p style="margin:0 0 6px 0;font-size:13px;color:var(--color-text-muted);font-weight:600;text-transform:uppercase;">Surplus Detected</p>
+          <p style="margin:0;font-size:18px;font-weight:800;color:#7c3aed;" id="surplus-qty-display">-- units</p>
+          <p style="margin:4px 0 0 0;font-size:13px;font-weight:600;" id="surplus-item-name"></p>
+          <p style="margin:2px 0 0 0;font-size:12px;color:var(--color-text-muted);">Source: <span id="surplus-from-camp"></span></p>
+        </div>
+        <div class="form-group" style="margin-bottom:16px;">
+          <label for="surplus-dest-select" style="display:block;margin-bottom:8px;font-weight:600;font-size:13px;">Send To (Destination Camp)</label>
+          <div class="custom-select-wrapper">
+            <select id="surplus-dest-select"></select>
+          </div>
+        </div>
+        <div class="form-group" style="margin-bottom:20px;">
+          <label for="surplus-qty-input" style="display:block;margin-bottom:8px;font-weight:600;font-size:13px;">Quantity to Transfer</label>
+          <input type="number" id="surplus-qty-input" min="1" class="stock-number-input" style="width:100%;padding:10px;border-radius:8px;border:1.5px solid var(--color-border);font-size:15px;font-weight:600;">
+        </div>
+        <button id="btn-confirm-surplus" class="primary-btn" style="width:100%;">✅ Confirm Transfer & Log</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Surplus Transfer Toast -->
+  <div class="toast-notification hidden" id="surplus-toast" style="bottom:30px;right:30px;position:fixed;z-index:5000;background:#fff;border:2px solid #7c3aed;border-radius:12px;padding:16px 20px;display:flex;align-items:center;gap:12px;box-shadow:0 8px 24px rgba(0,0,0,0.15);">
+    <span style="font-size:22px;">🔄</span>
+    <span style="font-weight:600;color:#7c3aed;" id="surplus-toast-msg"></span>
   </div>
 
   <script src="portal.js"></script>

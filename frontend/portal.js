@@ -219,32 +219,18 @@ function renderDashboard(campData, mlResults, activeCategories) {
     chartSubEl.textContent = `Showing projected stock depletion rate for ${campData.name} during Typhoon Amihan (PAGASA Signal No. ${campData.pagasaSignal}). Lines represent how much of each supply remains if NO new dispatch arrives.`;
   }
 
-  // --- Fix 3: Auto-scale Y-axis ---
-  // Compute chart max from actual current stock values (not hardcoded preset).
-  // Add 25% headroom so lines don't touch the top of the chart.
-  const autoMax = Math.max(...activeCategories.map(cat => campData.stock[cat] || 0)) * 1.25;
-  const chartMax = Math.max(autoMax, 20); // floor of 20 so zero-stock camps still render
-
-  // Update SVG Y-axis tick labels to match new scale
-  const t = chartMax;
-  const ytickValues = [t, t * 0.67, t * 0.33, 0];
+  // Update SVG Y-axis tick labels to match percentage scale
   const ytickIds = ['ytick-top', 'ytick-mid1', 'ytick-mid2', 'ytick-bot'];
+  const ytickValues = ['120%', '80%', '40%', '0%'];
   ytickIds.forEach((id, i) => {
     const el = document.getElementById(id);
-    if (el) el.textContent = Math.round(ytickValues[i]).toLocaleString();
+    if (el) el.textContent = ytickValues[i];
   });
-
-  // Recompute the threshold line Y position (always at 20% of chartMax)
-  const thresholdLineEl = document.getElementById('buffer-threshold-line');
-  if (thresholdLineEl) {
-    const thresholdY = 275 - (0.20 * 225); // 20% of chart height = y=230
-    thresholdLineEl.setAttribute('y1', thresholdY);
-    thresholdLineEl.setAttribute('y2', thresholdY);
-  }
 
   // --- Render Chart ---
   const chartItems = buildChartItems(campData, mlResults, activeCategories);
-  renderChart(chartMax, chartItems, activeCategories);
+  // We no longer pass dynamic chartMax, renderChart uses fixed 120%
+  renderChart(120, chartItems, activeCategories);
 
   // --- Render Manifest Table ---
   renderTable(campData, mlResults, activeCategories);
@@ -275,21 +261,26 @@ function renderDashboard(campData, mlResults, activeCategories) {
 function buildChartItems(campData, mlResults, activeCategories) {
   const chartItems = {};
 
-  // Typhoon S-curve depletion pattern (index 0=Arrival to index 6=72h)
-  // 100% → 92% → 60% → 30% → 12% → 4% → 0%
-  const typhoonCurve = [1.0, 0.92, 0.60, 0.30, 0.12, 0.04, 0.0];
+  // Typhoon cumulative consumption curve
+  // Arrival (0) -> 12h -> 24h -> 36h -> 48h -> 60h -> 72h
+  // Cumulative % of total demand consumed at each step:
+  const cumulativeConsumption = [0.0, 0.08, 0.40, 0.70, 0.88, 0.96, 1.0];
 
   activeCategories.forEach(cat => {
     const currentStock = campData.stock[cat] || 0;
+    const demand = mlResults[cat] || 1; // avoid division by zero
 
-    // The chart starts from CURRENT on-site stock and shows projected depletion
-    const chartPoints = typhoonCurve.map(fraction =>
-      Math.round(currentStock * fraction)
-    );
+    // Calculate how many percent of 72h demand is remaining at each time step
+    const chartPoints = cumulativeConsumption.map(fraction => {
+      const consumed = demand * fraction;
+      const remainingStock = Math.max(0, currentStock - consumed);
+      const percentOfDemandRemaining = (remainingStock / demand) * 100;
+      return percentOfDemandRemaining;
+    });
 
     chartItems[cat] = {
       chartPoints,
-      predictedDemand: mlResults[cat] || 0,
+      predictedDemand: demand,
       currentStock
     };
   });
@@ -311,6 +302,30 @@ function renderChart(maxVal, chartItems, activeCategories) {
   dotsContainer.innerHTML = '';
   legendContainer.innerHTML = '';
 
+  // --- Dynamic Threshold Line ---
+  // The threshold = 30% of the 72h predicted demand.
+  // Because the Y-axis is now normalized to percentages (max 120%), the 30% line is fixed
+  // and perfectly represents the critical boundary for ALL items simultaneously.
+  const chartMaxPercentage = 120; // Y-axis tops out at 120% coverage visually
+  const thresholdValue = 30;      // 30% critical threshold
+  const thresholdY = 275 - ((thresholdValue / chartMaxPercentage) * 225); // Math: 275 - (0.25 * 225) = 218.75
+
+  const thresholdLineEl = document.getElementById('buffer-threshold-line');
+  if (thresholdLineEl) {
+    thresholdLineEl.setAttribute('y1', thresholdY);
+    thresholdLineEl.setAttribute('y2', thresholdY);
+  }
+
+  // Move the threshold annotation label to match
+  const thresholdAnnotRect = document.querySelector('.annotation-layer rect');
+  const thresholdAnnotText = document.querySelector('.annotation-layer text');
+  if (thresholdAnnotRect) {
+    thresholdAnnotRect.setAttribute('y', thresholdY - 15);
+  }
+  if (thresholdAnnotText) {
+    thresholdAnnotText.setAttribute('y', thresholdY - 1);
+  }
+
   activeCategories.forEach(cat => {
     if (!chartItems[cat]) return;
 
@@ -327,10 +342,13 @@ function renderChart(maxVal, chartItems, activeCategories) {
     legendContainer.appendChild(legendItem);
 
     // Map chart data points to SVG coordinates
-    const points = itemData.chartPoints.map((val, idx) => {
+    const points = itemData.chartPoints.map((pctVal, idx) => {
       const x = xCoords[idx];
-      const y = 275 - ((val / maxVal) * 225);
-      return { x, y, val };
+      // Cap visual drawing at 120% so overstocked items (e.g. 1000% medical kits) 
+      // just draw a flat line at the top of the chart instead of breaking the layout
+      const plotVal = Math.min(pctVal, 120); 
+      const y = 275 - ((plotVal / 120) * 225);
+      return { x, y, val: pctVal }; // store real % in val for tooltip
     });
 
     // Build SVG path string
@@ -400,7 +418,7 @@ function renderTable(campData, mlResults, activeCategories) {
   tbody.innerHTML = '';
 
   if (activeCategories.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="5" style="text-align:center;color:var(--color-text-muted);padding:30px;">No categories selected. Check the boxes in the left panel and click Generate Forecast.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="6" style="text-align:center;color:var(--color-text-muted);padding:30px;">No categories selected. Check the boxes in the left panel and click Generate Forecast.</td></tr>`;
     return;
   }
 
@@ -414,7 +432,6 @@ function renderTable(campData, mlResults, activeCategories) {
 
   activeCategories.forEach((cat, index) => {
     const demand = mlResults[cat];
-    // Guard: if ML returned undefined/null/0 for this category, show placeholder
     if (!demand && demand !== 0) {
       console.warn(`No ML result for category: ${cat}`);
       return;
@@ -424,6 +441,8 @@ function renderTable(campData, mlResults, activeCategories) {
     const info = categoryDisplayInfo[cat];
     const stock = campData.stock[cat] || 0;
     const dispatch = Math.max(0, demand - stock);
+    const surplus = Math.max(0, stock - demand);
+    const isSurplus = stock > demand;
 
     // Coverage = what % of the 72h demand is already on site
     const coveragePct = demand === 0 ? 100 : Math.min(100, Math.round((stock / demand) * 100));
@@ -433,9 +452,24 @@ function renderTable(campData, mlResults, activeCategories) {
 
     // Dispatch urgency label
     let urgencyLabel = "";
-    if (dispatch === 0) urgencyLabel = `<span style="color:#34C759;font-weight:700;">Sufficient</span>`;
-    else if (coveragePct < 30) urgencyLabel = `<span style="color:#ff4b4b;font-weight:700;">URGENT</span>`;
-    else urgencyLabel = `<span style="color:#FF9500;font-weight:700;">NEEDED</span>`;
+    let dispatchCell = "";
+
+    if (isSurplus) {
+      urgencyLabel = `<span class="surplus-badge">SURPLUS</span>`;
+      dispatchCell = `<span style="color:#7c3aed;font-weight:700;">+${formatNum(surplus)} ${info.unit} excess</span><br>${urgencyLabel}<br>
+        <button class="allocate-surplus-btn" data-cat="${cat}" data-surplus="${surplus}" data-unit="${info.unit}" data-name="${info.name}">Allocate Surplus →</button>`;
+    } else if (dispatch === 0) {
+      urgencyLabel = `<span style="color:#34C759;font-weight:700;">Sufficient</span>`;
+      dispatchCell = `No dispatch needed<br>${urgencyLabel}`;
+    } else if (coveragePct < 30) {
+      urgencyLabel = `<span style="color:#ff4b4b;font-weight:700;">URGENT</span>`;
+      dispatchCell = `+ ${formatNum(dispatch)} ${info.unit}<br>${urgencyLabel}<br>
+        <button class="find-sources-btn" data-cat="${cat}" data-name="${info.name}">🔍 Find Surplus Sources</button>`;
+    } else {
+      urgencyLabel = `<span style="color:#FF9500;font-weight:700;">NEEDED</span>`;
+      dispatchCell = `+ ${formatNum(dispatch)} ${info.unit}<br>${urgencyLabel}<br>
+        <button class="find-sources-btn" data-cat="${cat}" data-name="${info.name}">🔍 Find Surplus Sources</button>`;
+    }
 
     const row = document.createElement('tr');
     row.style.animationDelay = `${index * 0.1}s`;
@@ -445,15 +479,12 @@ function renderTable(campData, mlResults, activeCategories) {
       <td class="col-demand">${formatNum(demand)} ${info.unit}</td>
       <td class="col-deficit">
         <div class="progress-bar-container">
-          <div class="progress-bar-fill ${barClass}" style="width: 0%"
-               data-target="${coveragePct}"></div>
+          <div class="progress-bar-fill ${isSurplus ? 'surplus' : barClass}" style="width: 0%"
+               data-target="${Math.min(coveragePct, 100)}"></div>
         </div>
-        <span class="deficit-label">${coveragePct}% covered</span>
+        <span class="deficit-label">${isSurplus ? '100%+ (Surplus)' : coveragePct + '% covered'}</span>
       </td>
-      <td class="col-dispatch highlight-column">
-        ${dispatch > 0 ? `+ ${formatNum(dispatch)} ${info.unit}` : `No dispatch needed`}
-        <br>${urgencyLabel}
-      </td>
+      <td class="col-dispatch highlight-column">${dispatchCell}</td>
     `;
     tbody.appendChild(row);
   });
@@ -470,6 +501,26 @@ function renderTable(campData, mlResults, activeCategories) {
       bar.style.width = bar.getAttribute('data-target') + '%';
     });
   }, 100);
+
+  // Wire Allocate Surplus buttons
+  document.querySelectorAll('.allocate-surplus-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      openSurplusModal(
+        btn.dataset.cat,
+        parseInt(btn.dataset.surplus),
+        btn.dataset.unit,
+        btn.dataset.name,
+        campData.name
+      );
+    });
+  });
+
+  // Wire Find Surplus Sources buttons
+  document.querySelectorAll('.find-sources-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      openFindSourcesModal(btn.dataset.cat, btn.dataset.name, campData);
+    });
+  });
 }
 
 
@@ -1070,4 +1121,432 @@ function showUploadStatus(msg, type) {
   } else {
     uploadStatusMsg.classList.add('error');
   }
+}
+
+
+// ==============================================================================
+// SECTION 14: SURPLUS ALLOCATION MODAL
+// ==============================================================================
+
+const otherCamps = {
+  brgy_172: "Brgy. 172 Covered Court",
+  brgy_173: "Brgy. 173 Gymnasium",
+  brgy_174: "Brgy. 174 Elementary School"
+};
+
+function openSurplusModal(cat, surplus, unit, itemName, fromCamp) {
+  const modal = document.getElementById('modal-surplus');
+  if (!modal) return;
+
+  document.getElementById('surplus-item-name').textContent = itemName;
+  document.getElementById('surplus-from-camp').textContent = fromCamp;
+  document.getElementById('surplus-qty-display').textContent = `${formatNum(surplus)} ${unit}`;
+
+  // Build destination dropdown (exclude source camp)
+  const select = document.getElementById('surplus-dest-select');
+  select.innerHTML = '';
+  Object.entries(otherCamps).forEach(([key, name]) => {
+    if (name === fromCamp) return;
+    const opt = document.createElement('option');
+    opt.value = key;
+    opt.textContent = name;
+    select.appendChild(opt);
+  });
+
+  // Populate qty input
+  document.getElementById('surplus-qty-input').value = surplus;
+  document.getElementById('surplus-qty-input').max = surplus;
+
+  // Wire confirm button
+  const confirmBtn = document.getElementById('btn-confirm-surplus');
+  const newConfirm = confirmBtn.cloneNode(true); // Remove old listener
+  confirmBtn.parentNode.replaceChild(newConfirm, confirmBtn);
+
+  newConfirm.addEventListener('click', () => {
+    const destKey = select.value;
+    const destName = otherCamps[destKey];
+    const qty = parseInt(document.getElementById('surplus-qty-input').value) || 0;
+    if (qty <= 0) return;
+
+    modal.classList.add('hidden');
+
+    // Navigate to warehouse with URL params for this surplus transfer
+    const params = new URLSearchParams({
+      type:  'surplus',
+      from:  Object.keys(otherCamps).find(k => otherCamps[k] === fromCamp) || 'brgy_173',
+      to:    destKey,
+      item:  cat,
+      qty:   qty,
+      unit:  unit,
+      name:  itemName
+    });
+    window.open(`warehouse.html?${params.toString()}`, '_blank');
+
+    // Also log it
+    addToTruckLog({
+      type:   'surplus',
+      item:   itemName,
+      qty,
+      unit,
+      from:   fromCamp,
+      to:     destName,
+      time:   new Date(),
+      signed: null
+    });
+
+    showSurplusToast(`${formatNum(qty)} ${unit} of ${itemName} → Load Truck opened for ${destName}`);
+  });
+
+  modal.classList.remove('hidden');
+  document.getElementById('btn-close-surplus').onclick = () => modal.classList.add('hidden');
+  modal.addEventListener('click', e => { if (e.target === modal) modal.classList.add('hidden'); });
+}
+
+function showSurplusToast(message) {
+  const toast = document.getElementById('surplus-toast');
+  if (!toast) return;
+  document.getElementById('surplus-toast-msg').textContent = message;
+  toast.classList.remove('hidden');
+  setTimeout(() => toast.classList.add('hidden'), 4000);
+}
+
+
+// ==============================================================================
+// SECTION 15: TRUCK DISPATCH LOG
+// ==============================================================================
+
+const dispatchLog = [
+  {
+    type: 'dispatch', item: 'Full Manifest (Water, Rice, Medical)', qty: null, unit: '', truck: 'TRUCK #4',
+    from: 'Central Depot', to: 'Brgy. 174 Elementary School',
+    time: new Date(Date.now() - 2 * 60 * 60 * 1000),
+    waybillNo: 'WB-20260616-7821', txRef: '#TX-8472901-M',
+    signed: { officer: 'Lt. Carmela Reyes', driver: 'R. Dela Cruz', receiver: 'Barangay Capt. F. Santos' }
+  },
+  {
+    type: 'dispatch', item: 'Bottled Water (1L)', qty: 1800, unit: 'units', truck: 'TRUCK #2',
+    from: 'Central Depot', to: 'Brgy. 172 Covered Court',
+    time: new Date(Date.now() - 5 * 60 * 60 * 1000),
+    waybillNo: 'WB-20260616-5503', txRef: '#TX-5503812-W',
+    signed: { officer: 'Sgt. Marco Lim', driver: 'M. Santos', receiver: 'Camp Mgr. A. Villanueva' }
+  },
+  {
+    type: 'surplus', item: 'Rice (5KG Sacks)', qty: 200, unit: 'sacks', truck: 'TRANSFER',
+    from: 'Brgy. 173 Gymnasium', to: 'Brgy. 172 Covered Court',
+    time: new Date(Date.now() - 8 * 60 * 60 * 1000),
+    waybillNo: null, txRef: null, signed: null
+  }
+];
+
+function addToTruckLog(entry) {
+  dispatchLog.unshift(entry);
+  renderTruckLog();
+}
+
+function timeAgo(date) {
+  const diffMs = Date.now() - date.getTime();
+  const mins = Math.round(diffMs / 60000);
+  if (mins < 60) return `${mins} min ago`;
+  const hrs = Math.round(mins / 60);
+  if (hrs < 24) return `${hrs} hr ago`;
+  return `${Math.round(hrs / 24)} days ago`;
+}
+
+function renderTruckLog() {
+  const tbody = document.getElementById('truck-log-body');
+  if (!tbody) return;
+  tbody.innerHTML = '';
+  dispatchLog.slice(0, 8).forEach((entry, idx) => {
+    const isTransfer = entry.type === 'surplus';
+    const isSigned   = !!(entry.signed);
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td style="padding:12px 16px;">
+        <span class="log-badge ${isTransfer ? 'log-badge-transfer' : 'log-badge-dispatch'}">${isTransfer ? '🔄 TRANSFER' : '🚚 DISPATCH'}</span>
+        ${isSigned ? '<span class="log-signed-badge">✓ SIGNED</span>' : ''}
+      </td>
+      <td style="padding:12px 16px;font-weight:600;">${entry.item}</td>
+      <td style="padding:12px 16px;">${entry.qty ? formatNum(entry.qty) + ' ' + entry.unit : 'Full Cargo'}</td>
+      <td style="padding:12px 16px;">${entry.from}</td>
+      <td style="padding:12px 16px;font-weight:600;">${entry.to}</td>
+      <td style="padding:12px 16px;color:var(--color-text-muted);font-size:12px;">${timeAgo(entry.time)}</td>
+      <td style="padding:12px 16px;">
+        <button class="view-waybill-btn" data-log-idx="${idx}">📄 Waybill</button>
+      </td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // Wire waybill buttons
+  document.querySelectorAll('.view-waybill-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const entry = dispatchLog[parseInt(btn.dataset.logIdx)];
+      openLogWaybill(entry);
+    });
+  });
+}
+
+// Init truck log and pending dispatches on load
+window.addEventListener('DOMContentLoaded', () => {
+  applyPendingDispatches();
+  renderTruckLog();
+});
+
+// Listen for dispatches coming from the warehouse in real-time (if open in another tab)
+window.addEventListener('storage', (e) => {
+  if (e.key === 'rs_pending_dispatches') {
+    applyPendingDispatches();
+    // If a camp is currently selected, click its marker to refresh the UI with new stock values
+    const selectedCampName = document.getElementById('val-population')?.closest('.status-card')?.parentElement?.querySelector('.section-title')?.textContent;
+    // We just trigger a re-click on the active marker or re-generate forecast if possible.
+    // The simplest way to re-render is to simulate a click on "Generate Forecast" if active.
+    const btnForecast = document.getElementById('btn-generate');
+    if (btnForecast && !btnForecast.disabled) {
+      btnForecast.click();
+    }
+  }
+});
+
+// ==============================================================================
+// SECTION 15.5: APPLY PENDING DISPATCHES
+// ==============================================================================
+
+function applyPendingDispatches() {
+  let pending = [];
+  try { pending = JSON.parse(localStorage.getItem('rs_pending_dispatches') || '[]'); } catch(e) {}
+  if (!pending.length) return;
+
+  // Process each pending dispatch
+  pending.forEach(entry => {
+    // 1. Update stock at destination camp (add the goods)
+    const camp = database[entry.toKey];
+    if (camp && camp.stock) {
+      entry.items.forEach(item => {
+        if (camp.stock[item.key] !== undefined) {
+          camp.stock[item.key] += item.qty;
+        }
+      });
+    }
+
+    // 2. Also deduct from origin camp if it's a surplus transfer (fromKey is a camp)
+    const originCamp = database[entry.fromKey];
+    if (originCamp && originCamp.stock) {
+      entry.items.forEach(item => {
+        if (originCamp.stock[item.key] !== undefined) {
+          originCamp.stock[item.key] = Math.max(0, originCamp.stock[item.key] - item.qty);
+        }
+      });
+    }
+
+    // 3. Generate a combined name for the truck log
+    const itemNames = entry.items.map(i => {
+      const name = i.key === 'water' ? 'Bottled Water' : i.key === 'rice' ? 'Rice Sacks' : 'Medical Kits';
+      return `${formatNum(i.qty)} ${name}`;
+    }).join(' + ');
+
+    // 4. Add to truck log
+    const isSurplus = entry.fromKey.startsWith('brgy');
+    addToTruckLog({
+      type: isSurplus ? 'surplus' : 'dispatch',
+      item: itemNames,
+      qty: null,
+      unit: '',
+      truck: entry.truckLabel,
+      from: originCamp ? originCamp.name : 'Depot',
+      to: camp ? camp.name : entry.toKey,
+      time: new Date(entry.timestamp),
+      waybillNo: null,
+      txRef: entry.txRef,
+      signed: null
+    });
+  });
+
+  // Clear pending queue after applying
+  localStorage.setItem('rs_pending_dispatches', '[]');
+}
+
+
+// ==============================================================================
+// SECTION 16: LOG WAYBILL VIEWER (Signed vs Unsigned)
+// ==============================================================================
+
+function openLogWaybill(entry) {
+  const waybillNo  = entry.waybillNo  || `WB-${new Date().toISOString().slice(0,10).replace(/-/g,'')}-${Math.floor(1000 + Math.random() * 9000)}`;
+  const txRef      = entry.txRef      || '#TX-' + Math.floor(1000000 + Math.random() * 9000000) + '-M';
+  const truckLabel = entry.truck      || 'N/A';
+  const issuedDate = entry.time.toLocaleString('en-PH', { month:'long', day:'numeric', year:'numeric', hour:'2-digit', minute:'2-digit' });
+
+  const cargoItems = entry.qty
+    ? [{ name: entry.item, qty: `${formatNum(entry.qty)} ${entry.unit}` }]
+    : [{ name: entry.item, qty: 'Full Cargo Manifest' }];
+
+  const cargoRows = cargoItems.map((item, i) => `
+    <tr>
+      <td class="wb-cargo-num">${i + 1}</td>
+      <td class="wb-cargo-name">${item.name}</td>
+      <td class="wb-cargo-qty">${item.qty}</td>
+    </tr>`).join('');
+
+  const signed = entry.signed;
+  const sigBlocks = [
+    { label: 'Relief Officer',          name: signed?.officer  || '', sub: 'Name & Date' },
+    { label: 'Truck Driver / Courier',  name: signed?.driver   || '', sub: 'Name & Date' },
+    { label: 'Received By (Camp)',       name: signed?.receiver || '', sub: 'Name, Position & Date' }
+  ];
+
+  const sigHTML = sigBlocks.map(s => `
+    <div class="wb-sig-block">
+      <div class="wb-sig-line">${s.name ? `<span class="wb-sig-filled">${s.name}</span>` : ''}</div>
+      <div class="wb-sig-label">${s.label}</div>
+      <div class="wb-sig-name">${s.name ? `<em>${s.sub}</em>` : s.sub}</div>
+    </div>`).join('');
+
+  const signedBadge = signed
+    ? '<span class="wb-signed-stamp-print">✓ COMPLETED &amp; SIGNED</span>'
+    : '<span class="wb-pending-stamp-print">⏳ PENDING SIGNATURE</span>';
+
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Waybill ${waybillNo}</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap');
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', Arial, sans-serif; font-size: 13px; color: #111; background: #fff; padding: 32px; max-width: 680px; margin: 0 auto; }
+    .wb-header { text-align: center; border-bottom: 3px double #111; padding-bottom: 14px; margin-bottom: 18px; }
+    .wb-republic { font-size: 10px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase; color: #555; margin-bottom: 4px; }
+    .wb-title { font-size: 22px; font-weight: 800; letter-spacing: -0.01em; margin-bottom: 6px; }
+    .wb-signed-stamp-print { display: inline-block; padding: 3px 12px; background: #16a34a; color: #fff; font-size: 11px; font-weight: 700; border-radius: 12px; }
+    .wb-pending-stamp-print { display: inline-block; padding: 3px 12px; background: #d97706; color: #fff; font-size: 11px; font-weight: 700; border-radius: 12px; }
+    .wb-section { border: 1px solid #ccc; border-radius: 6px; margin-bottom: 14px; overflow: hidden; }
+    .wb-section-header { background: #f0f0f0; padding: 7px 14px; font-size: 10px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #444; border-bottom: 1px solid #ccc; }
+    .wb-section-body { padding: 12px 14px; }
+    .wb-meta-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 24px; }
+    .wb-meta-item { display: flex; flex-direction: column; gap: 2px; }
+    .wb-meta-label { font-size: 10px; font-weight: 700; color: #777; text-transform: uppercase; }
+    .wb-meta-value { font-size: 13px; font-weight: 600; color: #111; }
+    .wb-meta-value.waybill-no { font-size: 16px; font-weight: 800; color: #1a3a8f; font-family: monospace; }
+    table.wb-cargo-table { width: 100%; border-collapse: collapse; }
+    .wb-cargo-table th { background: #f0f0f0; padding: 8px 10px; text-align: left; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: #555; border-bottom: 1px solid #ccc; }
+    .wb-cargo-table td { padding: 10px; border-bottom: 1px solid #eee; font-size: 13px; }
+    .wb-cargo-table tr:last-child td { border-bottom: none; }
+    .wb-cargo-num { width: 40px; color: #888; font-weight: 600; }
+    .wb-cargo-name { font-weight: 600; }
+    .wb-cargo-qty { font-weight: 700; color: #1a3a8f; text-align: right; }
+    .wb-sig-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
+    .wb-sig-block { display: flex; flex-direction: column; gap: 4px; }
+    .wb-sig-line { border-bottom: 1.5px solid #333; height: 36px; margin-bottom: 4px; display: flex; align-items: flex-end; padding-bottom: 4px; }
+    .wb-sig-filled { font-size: 15px; font-family: Georgia, serif; font-style: italic; color: #111; font-weight: 700; }
+    .wb-sig-label { font-size: 10px; color: #555; font-weight: 700; text-transform: uppercase; }
+    .wb-sig-name { font-size: 10px; color: #999; font-style: italic; }
+    .wb-tx-ref { text-align: right; font-size: 11px; font-weight: 700; color: #1a3a8f; font-family: monospace; margin-top: 10px; }
+    .wb-footer-note { text-align: center; font-size: 10px; color: #888; margin-top: 18px; padding-top: 10px; border-top: 1px solid #eee; }
+    @media print { body { padding: 16px; } }
+  </style>
+</head>
+<body>
+  <div class="wb-header">
+    <div class="wb-republic">Republic of the Philippines &nbsp;•&nbsp; DSWD / NDRRMC Operations</div>
+    <div class="wb-title">ReliefSync — Dispatch Waybill</div>
+    ${signedBadge}
+  </div>
+  <div class="wb-section">
+    <div class="wb-section-header">Document Reference</div>
+    <div class="wb-section-body">
+      <div class="wb-meta-grid">
+        <div class="wb-meta-item"><span class="wb-meta-label">Waybill No.</span><span class="wb-meta-value waybill-no">${waybillNo}</span></div>
+        <div class="wb-meta-item"><span class="wb-meta-label">Date &amp; Time Issued</span><span class="wb-meta-value">${issuedDate}</span></div>
+        <div class="wb-meta-item"><span class="wb-meta-label">Issued By</span><span class="wb-meta-value">ReliefSync — Relief Officer Portal</span></div>
+        <div class="wb-meta-item"><span class="wb-meta-label">Truck / Unit</span><span class="wb-meta-value">${truckLabel}</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="wb-section">
+    <div class="wb-section-header">Route</div>
+    <div class="wb-section-body">
+      <div class="wb-meta-grid">
+        <div class="wb-meta-item"><span class="wb-meta-label">Origin</span><span class="wb-meta-value">${entry.from}</span></div>
+        <div class="wb-meta-item"><span class="wb-meta-label">Destination</span><span class="wb-meta-value">${entry.to}</span></div>
+      </div>
+    </div>
+  </div>
+  <div class="wb-section">
+    <div class="wb-section-header">Cargo Manifest</div>
+    <table class="wb-cargo-table">
+      <thead><tr><th>#</th><th>Supply Item</th><th style="text-align:right">Quantity</th></tr></thead>
+      <tbody>${cargoRows}</tbody>
+    </table>
+  </div>
+  <div class="wb-section">
+    <div class="wb-section-header">Authorization Signatures</div>
+    <div class="wb-section-body">
+      <div class="wb-sig-grid">${sigHTML}</div>
+    </div>
+  </div>
+  <div class="wb-tx-ref">Transaction Ref: ${txRef}</div>
+  <div class="wb-footer-note">This document is system-generated by ReliefSync. Keep one copy at the depot and one at the receiving evacuation center.</div>
+  <script>window.onload = function() { window.print(); };<\/script>
+</body>
+</html>`;
+
+  const win = window.open('', '_blank', 'width=720,height=900');
+  if (win) { win.document.write(html); win.document.close(); }
+  else { alert('Please allow pop-ups to view the waybill.'); }
+}
+
+
+// ==============================================================================
+// SECTION 17: FIND SURPLUS SOURCES MODAL
+// ==============================================================================
+
+function openFindSourcesModal(cat, itemName, currentCampData) {
+  const modal = document.getElementById('modal-find-sources');
+  if (!modal) return;
+
+  document.getElementById('sources-item-name').textContent = itemName;
+  document.getElementById('sources-needed-camp').textContent = currentCampData.name;
+
+  const list = document.getElementById('sources-results-list');
+  list.innerHTML = '';
+
+  // Scan all camps for surplus of this item
+  const results = [];
+  Object.entries(database).forEach(([key, camp]) => {
+    if (camp.name === currentCampData.name) return;
+    const stock  = camp.stock[cat] || 0;
+    const demand = computeFallback(camp.population, cat);
+    const surplus = stock - demand;
+    if (surplus > 0) {
+      results.push({ key, camp, surplus, stock, demand });
+    }
+  });
+
+  if (results.length === 0) {
+    list.innerHTML = `<div class="sources-empty">No surplus found at other camps for ${itemName}. All camps are also running low.</div>`;
+  } else {
+    results.forEach(r => {
+      const li = document.createElement('div');
+      li.className = 'source-result-card';
+      li.innerHTML = `
+        <div class="source-result-header">
+          <span class="source-result-name">${r.camp.name}</span>
+          <span class="surplus-badge">SURPLUS</span>
+        </div>
+        <div class="source-result-detail">
+          📦 On-site: <strong>${formatNum(r.stock)}</strong> &nbsp;|&nbsp;
+          Estimated demand: <strong>${formatNum(r.demand)}</strong> &nbsp;|&nbsp;
+          Available: <strong style="color:#7c3aed;">+${formatNum(r.surplus)}</strong>
+        </div>
+        <a class="source-dispatch-btn" href="warehouse.html?type=surplus&from=${r.key}&to=${Object.keys(database).find(k => database[k].name === currentCampData.name)}&item=${cat}&qty=${r.surplus}&unit=${cat === 'water' ? 'units' : cat === 'rice' ? 'sacks' : 'kits'}&name=${encodeURIComponent(itemName)}" target="_blank">
+          🚚 Load Truck from ${r.camp.name} →
+        </a>
+      `;
+      list.appendChild(li);
+    });
+  }
+
+  modal.classList.remove('hidden');
+  document.getElementById('btn-close-sources').onclick = () => modal.classList.add('hidden');
+  modal.addEventListener('click', e => { if (e.target === modal) modal.classList.add('hidden'); });
 }

@@ -25,6 +25,7 @@
       </nav>
       
       <div class="nav-actions">
+        <a href="public.html" class="public-dashboard-btn" id="nav-public-btn">Public Dashboard</a>
         <a href="login.html" class="portal-btn">Access Portal →</a>
       </div>
     </div>
@@ -35,11 +36,14 @@
     <div class="hero-container">
       <!-- Hero Left: Text & CTA -->
       <div class="hero-text-block">
-        <h1 class="hero-headline">Shifting Disaster Logistics From Reactive Crisis to Predictive Relief.</h1>
+        <h1 class="hero-headline">Predict the crisis.<br>Sync the relief.</h1>
         <p class="hero-supporting">
           Empowering municipal disaster teams and humanitarian networks with machine learning to eliminate supply bottlenecks, prevent resource waste, and ensure equitable distribution.
         </p>
-        <button id="btn-deploy-cta" class="cta-primary-btn">Deploy for Your Municipality</button>
+        <div style="display:flex;gap:14px;flex-wrap:wrap;align-items:center;">
+          <button id="btn-deploy-cta" class="cta-primary-btn">Deploy for Your Municipality</button>
+          <a href="research.html" class="cta-secondary-btn" style="padding:14px 28px;border:2px solid rgba(255,255,255,0.3);border-radius:10px;color:#fff;font-weight:700;font-size:1rem;text-decoration:none;backdrop-filter:blur(8px);background:rgba(255,255,255,0.08);transition:all 0.2s;">Research & Methodology ↗</a>
+        </div>
       </div>
       
       <!-- Hero Right: SVG Route Map Graphic -->
@@ -144,6 +148,59 @@
     </div>
   </section>
 
+  <!-- Public Transparency Section -->
+  <section class="transparency-section" id="transparency">
+    <div class="section-container">
+      <div class="transparency-inner">
+        <div class="transparency-text">
+          <span class="section-subtitle">Accountability</span>
+          <h2 class="section-title">Public Supply Transparency Dashboard</h2>
+          <p class="transparency-desc">
+            ReliefSync maintains a public-facing accountability page so that communities, media, and civil society
+            can independently verify that evacuation centers are properly stocked during a disaster.
+            All supply levels and AI forecasts shown there are sourced directly from the same data used by DSWD relief officers.
+          </p>
+          <ul class="transparency-list">
+            <li>Live stock levels per evacuation center</li>
+            <li>AI-predicted 72-hour demand per supply type</li>
+            <li>Overall supply health status (CRITICAL / WARNING / STABLE)</li>
+            <li>Works offline — shows last known data if internet drops</li>
+            <li>No login required — open to anyone</li>
+          </ul>
+          <a href="public.html" class="transparency-cta-btn">View Public Dashboard</a>
+        </div>
+        <div class="transparency-preview">
+          <div class="preview-card">
+            <div class="preview-header">
+              <span class="preview-title">ReliefSync — Public Accountability</span>
+              <span class="preview-badge">LIVE</span>
+            </div>
+            <div class="preview-camp">Brgy. 172 Covered Court &mdash; Signal No. 4</div>
+            <div class="preview-bars">
+              <div class="preview-bar-row">
+                <span class="preview-bar-label">Bottled Water</span>
+                <div class="preview-bar-track"><div class="preview-bar-fill" style="width:9%;background:#ef4444"></div></div>
+                <span class="preview-bar-pct preview-critical">9%</span>
+              </div>
+              <div class="preview-bar-row">
+                <span class="preview-bar-label">Rice Packs</span>
+                <div class="preview-bar-track"><div class="preview-bar-fill" style="width:11%;background:#ef4444"></div></div>
+                <span class="preview-bar-pct preview-critical">11%</span>
+              </div>
+              <div class="preview-bar-row">
+                <span class="preview-bar-label">Medical Kits</span>
+                <div class="preview-bar-track"><div class="preview-bar-fill" style="width:24%;background:#f97316"></div></div>
+                <span class="preview-bar-pct preview-warning">24%</span>
+              </div>
+            </div>
+            <div class="preview-alert-strip preview-alert-critical">CRITICAL &mdash; Immediate resupply required</div>
+            <div class="preview-readonly-note">Read-only &bull; No login required &bull; Data from DSWD relief officers</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Footer -->
   <footer class="footer">
     <div class="footer-container">
@@ -206,6 +263,6 @@
     </div>
   </div>
 
-  <script src="app.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
