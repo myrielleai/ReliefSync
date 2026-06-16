@@ -1151,3 +1151,199 @@ thead th.highlight-column {
   from { opacity: 0.4; }
   to { opacity: 1; }
 }
+
+/* ══════════════════════════════════════════════════════════
+   FIX 1: Training Info Card (Dataset Viewer tab)
+══════════════════════════════════════════════════════════ */
+.training-info-card {
+  background: #f0f4ff;
+  border: 1.5px solid #b8ccff;
+  border-radius: 10px;
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+.training-info-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.training-info-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1a3a8f;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+.training-info-badges {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.training-badge {
+  background: #1a3a8f;
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 20px;
+  letter-spacing: 0.02em;
+}
+.training-info-desc {
+  font-size: 12.5px;
+  color: #2d3a6b;
+  line-height: 1.55;
+  margin-bottom: 10px;
+}
+.training-info-columns {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin-bottom: 12px;
+}
+.training-col-item {
+  font-size: 12px;
+  color: #2d3a6b;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.col-pill {
+  background: #1a3a8f;
+  color: #fff;
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  white-space: nowrap;
+}
+.download-training-csv-btn {
+  display: inline-block;
+  background: #1a3a8f;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 7px 14px;
+  border-radius: 6px;
+  text-decoration: none;
+  transition: background 0.2s;
+}
+.download-training-csv-btn:hover {
+  background: #0f2766;
+}
+
+/* ══════════════════════════════════════════════════════════
+   FIX 2: Daily Stock Update Panel (Sidebar)
+══════════════════════════════════════════════════════════ */
+.stock-update-panel {
+  margin: 12px 20px 0;
+  border-radius: 10px;
+  border: 1.5px solid #e5e5ea;
+  overflow: hidden;
+}
+.stock-panel-toggle {
+  width: 100%;
+  background: #f5f5f7;
+  border: none;
+  padding: 10px 14px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  font-weight: 600;
+  color: #1c1c1e;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.stock-panel-toggle:hover {
+  background: #e5e5ea;
+}
+.toggle-arrow {
+  font-size: 10px;
+  color: var(--color-text-muted);
+  transition: transform 0.2s;
+}
+.stock-panel-body {
+  padding: 12px 14px;
+  background: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  max-height: 300px;
+  overflow: hidden;
+  transition: max-height 0.3s ease, padding 0.3s ease;
+}
+.stock-panel-body.collapsed {
+  max-height: 0;
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.stock-update-note {
+  font-size: 11.5px;
+  color: #7d5a00;
+  background: #fff8e1;
+  border: 1px solid #f0d060;
+  border-radius: 6px;
+  padding: 8px 10px;
+  line-height: 1.5;
+}
+.stock-input-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.stock-input-row label {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--color-text-secondary);
+}
+.stock-number-input {
+  width: 100%;
+  padding: 7px 10px;
+  border: 1.5px solid var(--color-border-light);
+  border-radius: 6px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 600;
+  color: #1c1c1e;
+  background: var(--color-fill-light);
+  transition: border-color 0.15s;
+}
+.stock-number-input:focus {
+  outline: none;
+  border-color: #007aff;
+  background: #fff;
+}
+.apply-stock-btn {
+  width: 100%;
+  padding: 9px;
+  background: #007aff;
+  color: #fff;
+  border: none;
+  border-radius: 7px;
+  font-family: var(--font-sans);
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s, transform 0.1s;
+}
+.apply-stock-btn:hover:not(:disabled) {
+  background: #0062cc;
+}
+.apply-stock-btn:active:not(:disabled) {
+  transform: scale(0.98);
+}
+.apply-stock-btn:disabled {
+  background: #8e8e93;
+  cursor: not-allowed;
+}
+.stock-last-updated {
+  font-size: 11px;
+  color: #34C759;
+  font-weight: 600;
+  text-align: center;
+  min-height: 14px;
+}
+

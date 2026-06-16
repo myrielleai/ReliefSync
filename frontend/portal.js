@@ -160,17 +160,20 @@ function renderDashboard(campData, mlResults, activeCategories) {
   // --- Update Population Card ---
   document.getElementById('val-population').textContent = campData.populationDisplay;
 
-  // --- Compute alert level dynamically from stock vs demand ---
-  // Coverage ratio = (total current stock) / (total predicted 72h demand)
-  // < 30% → CRITICAL | 30-60% → WARNING | > 60% → STABLE
-  let totalDemand = 0;
-  let totalStock = 0;
+  // --- Fix 4: Per-item worst-case threshold logic ---
+  // Instead of aggregating all items together, find the single item with the WORST coverage ratio.
+  // This prevents a well-stocked item masking a critically low one.
+  let worstRatio = Infinity;
+  let worstCatName = '';
   activeCategories.forEach(cat => {
-    totalDemand += (mlResults[cat] || 0);
-    totalStock += (campData.stock[cat] || 0);
+    const stock = campData.stock[cat] || 0;
+    const demand = mlResults[cat] || 1;
+    const ratio = stock / demand;
+    if (ratio < worstRatio) {
+      worstRatio = ratio;
+      worstCatName = categoryColors[cat] ? categoryColors[cat].label : cat;
+    }
   });
-
-  const coverageRatio = totalDemand === 0 ? 1 : totalStock / totalDemand;
 
   const alertCard = document.getElementById('card-alert');
   const alertVal = document.getElementById('val-alert');
@@ -182,20 +185,20 @@ function renderDashboard(campData, mlResults, activeCategories) {
 
   let computedAlertLevel, alertColor, alertIndicatorMsg;
 
-  if (coverageRatio < 0.30) {
+  if (worstRatio < 0.30) {
     computedAlertLevel = "CRITICAL";
     alertColor = "#ff4b4b";  // red
-    alertIndicatorMsg = "Immediate Dispatch Required";
+    alertIndicatorMsg = `${worstCatName} critically low — Immediate Dispatch Required`;
     alertCard.classList.add('highlight-alert-critical');
-  } else if (coverageRatio < 0.60) {
+  } else if (worstRatio < 0.60) {
     computedAlertLevel = "WARNING";
     alertColor = "#FF9500";  // orange
-    alertIndicatorMsg = "Dispatch Recommended Soon";
+    alertIndicatorMsg = `${worstCatName} below safe level — Dispatch Recommended Soon`;
     alertCard.classList.add('highlight-alert-warning');
   } else {
     computedAlertLevel = "STABLE";
     alertColor = "#34C759";  // green
-    alertIndicatorMsg = "Stocks Sufficient for 72h";
+    alertIndicatorMsg = "All supplies sufficient for 72h";
     alertCard.classList.add('highlight-alert-stable');
   }
 
@@ -216,9 +219,32 @@ function renderDashboard(campData, mlResults, activeCategories) {
     chartSubEl.textContent = `Showing projected stock depletion rate for ${campData.name} during Typhoon Amihan (PAGASA Signal No. ${campData.pagasaSignal}). Lines represent how much of each supply remains if NO new dispatch arrives.`;
   }
 
+  // --- Fix 3: Auto-scale Y-axis ---
+  // Compute chart max from actual current stock values (not hardcoded preset).
+  // Add 25% headroom so lines don't touch the top of the chart.
+  const autoMax = Math.max(...activeCategories.map(cat => campData.stock[cat] || 0)) * 1.25;
+  const chartMax = Math.max(autoMax, 20); // floor of 20 so zero-stock camps still render
+
+  // Update SVG Y-axis tick labels to match new scale
+  const t = chartMax;
+  const ytickValues = [t, t * 0.67, t * 0.33, 0];
+  const ytickIds = ['ytick-top', 'ytick-mid1', 'ytick-mid2', 'ytick-bot'];
+  ytickIds.forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = Math.round(ytickValues[i]).toLocaleString();
+  });
+
+  // Recompute the threshold line Y position (always at 20% of chartMax)
+  const thresholdLineEl = document.getElementById('buffer-threshold-line');
+  if (thresholdLineEl) {
+    const thresholdY = 275 - (0.20 * 225); // 20% of chart height = y=230
+    thresholdLineEl.setAttribute('y1', thresholdY);
+    thresholdLineEl.setAttribute('y2', thresholdY);
+  }
+
   // --- Render Chart ---
   const chartItems = buildChartItems(campData, mlResults, activeCategories);
-  renderChart(campData.maxChartVal, chartItems, activeCategories);
+  renderChart(chartMax, chartItems, activeCategories);
 
   // --- Render Manifest Table ---
   renderTable(campData, mlResults, activeCategories);
@@ -711,12 +737,110 @@ async function fetchAndRender(campData, activeCategories, showLoader) {
 window.addEventListener('DOMContentLoaded', () => {
   generateForecast(true);
 
-  // Set up download template URL
+  // Set up download template URL (Upload tab)
   const downloadLink = document.getElementById('link-download-template');
   if (downloadLink) {
     downloadLink.href = `${ML_API_BASE_URL}/api/dataset/download`;
   }
+
+  // Fix 1: Training CSV download link (Dataset Viewer tab)
+  const trainingCsvLink = document.getElementById('link-download-training-csv');
+  if (trainingCsvLink) {
+    trainingCsvLink.href = `${ML_API_BASE_URL}/api/dataset/download`;
+    trainingCsvLink.setAttribute('target', '_blank');
+  }
+
+  // Fix 2: Pre-fill stock inputs from currently selected camp on page load
+  prefillStockInputs();
+
+  // Re-fill stock inputs whenever the camp selector changes
+  const campSelect = document.getElementById('evac-center-select');
+  if (campSelect) {
+    campSelect.addEventListener('change', () => {
+      prefillStockInputs();
+      // Clear last-updated indicator when switching camps
+      const lastUpdatedEl = document.getElementById('stock-last-updated');
+      if (lastUpdatedEl) lastUpdatedEl.textContent = '';
+    });
+  }
 });
+
+
+// ==============================================================================
+// SECTION 13: DAILY STOCK UPDATE PANEL (Fix 2)
+// ==============================================================================
+
+function prefillStockInputs() {
+  const selectedCenter = document.getElementById('evac-center-select').value;
+  const campData = database[selectedCenter];
+  if (!campData) return;
+
+  const waterInput  = document.getElementById('input-stock-water');
+  const riceInput   = document.getElementById('input-stock-rice');
+  const medicalInput = document.getElementById('input-stock-medical');
+
+  if (waterInput)   waterInput.value   = campData.stock.water   || 0;
+  if (riceInput)    riceInput.value    = campData.stock.rice    || 0;
+  if (medicalInput) medicalInput.value = campData.stock.medical || 0;
+}
+
+// Toggle collapse/expand of stock panel
+const stockToggleBtn = document.getElementById('btn-toggle-stock-panel');
+const stockPanelBody = document.getElementById('stock-panel-body');
+const stockToggleArrow = document.getElementById('stock-toggle-arrow');
+
+if (stockToggleBtn) {
+  // Start collapsed
+  if (stockPanelBody) stockPanelBody.classList.add('collapsed');
+
+  stockToggleBtn.addEventListener('click', () => {
+    const isCollapsed = stockPanelBody.classList.contains('collapsed');
+    if (isCollapsed) {
+      stockPanelBody.classList.remove('collapsed');
+      if (stockToggleArrow) stockToggleArrow.textContent = '\u25b2';
+    } else {
+      stockPanelBody.classList.add('collapsed');
+      if (stockToggleArrow) stockToggleArrow.textContent = '\u25bc';
+    }
+  });
+}
+
+// Apply & Recalculate button
+const btnApplyStock = document.getElementById('btn-apply-stock');
+if (btnApplyStock) {
+  btnApplyStock.addEventListener('click', () => {
+    const selectedCenter = document.getElementById('evac-center-select').value;
+    const campData = database[selectedCenter];
+    if (!campData) return;
+
+    const waterVal   = parseInt(document.getElementById('input-stock-water').value,  10) || 0;
+    const riceVal    = parseInt(document.getElementById('input-stock-rice').value,   10) || 0;
+    const medicalVal = parseInt(document.getElementById('input-stock-medical').value, 10) || 0;
+
+    // Update the in-memory database entry for this camp
+    campData.stock.water   = waterVal;
+    campData.stock.rice    = riceVal;
+    campData.stock.medical = medicalVal;
+
+    // Show timestamp
+    const now = new Date();
+    const timeStr = now.toLocaleTimeString('en-PH', { hour: '2-digit', minute: '2-digit' });
+    const dateStr = now.toLocaleDateString('en-PH', { month: 'short', day: 'numeric', year: 'numeric' });
+    const lastUpdatedEl = document.getElementById('stock-last-updated');
+    if (lastUpdatedEl) lastUpdatedEl.textContent = `Last updated: ${dateStr} at ${timeStr}`;
+
+    // Flash the button
+    btnApplyStock.textContent = 'Recalculating...';
+    btnApplyStock.disabled = true;
+
+    // Re-run forecast with updated stock
+    generateForecast(false).then(() => {
+      btnApplyStock.textContent = 'Apply & Recalculate';
+      btnApplyStock.disabled = false;
+    });
+  });
+}
+
 
 
 // ==============================================================================

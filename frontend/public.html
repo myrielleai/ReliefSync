@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ReliefSync — Public Accountability Dashboard</title>
+  <meta name="description" content="Public transparency dashboard showing real-time supply levels at evacuation centers during Typhoon Amihan. No login required.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="public.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header class="pub-header">
+    <div class="pub-header-inner">
+      <div class="pub-brand">
+        <a href="index.html" class="pub-logo">ReliefSync</a>
+        <span class="pub-badge">Public Dashboard</span>
+      </div>
+      <nav class="pub-nav">
+        <a href="index.html" class="pub-nav-link">Home</a>
+        <a href="login.html" class="pub-nav-btn">Officer Portal →</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Transparency Notice -->
+  <div class="transparency-banner">
+    <div class="transparency-banner-inner">
+      <span class="tb-icon">&#9432;</span>
+      <span>This page is publicly accessible — no login required. All supply levels and ML predictions shown here are sourced from the same data used by DSWD relief officers. <strong>You cannot modify anything on this page.</strong></span>
+    </div>
+  </div>
+
+  <!-- Offline Banner (hidden by default, shown if backend is unreachable) -->
+  <div class="offline-banner hidden" id="offline-banner">
+    <span class="offline-icon">&#9888;</span>
+    <span id="offline-banner-text">Backend offline — showing last known data. Live predictions unavailable.</span>
+  </div>
+
+  <!-- Main Content -->
+  <main class="pub-main">
+
+    <!-- Page Title -->
+    <div class="pub-page-header">
+      <h1 class="pub-page-title">Evacuation Center Supply Status</h1>
+      <p class="pub-page-subtitle">
+        Select an evacuation center below to view current stock levels, ML-predicted 72-hour demand, and overall supply health status.
+        Data is updated by authorized DSWD relief officers as the disaster progresses.
+      </p>
+    </div>
+
+    <!-- Camp Selector -->
+    <div class="pub-camp-selector">
+      <label for="pub-camp-select" class="pub-select-label">Select Evacuation Center</label>
+      <div class="pub-select-wrapper">
+        <select id="pub-camp-select">
+          <option value="brgy_172">Brgy. 172 Covered Court — Caloocan City</option>
+          <option value="brgy_173">Brgy. 173 Gymnasium — Caloocan City</option>
+          <option value="brgy_174">Brgy. 174 Elementary School — Caloocan City</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Loading State -->
+    <div class="pub-loading" id="pub-loading">
+      <div class="pub-spinner"></div>
+      <span>Fetching live data from ML backend...</span>
+    </div>
+
+    <!-- Dashboard Panel -->
+    <div class="pub-dashboard hidden" id="pub-dashboard">
+
+      <!-- Camp Info Row -->
+      <div class="pub-camp-info-row">
+        <div class="pub-camp-meta">
+          <h2 class="pub-camp-name" id="pub-camp-name">Brgy. 172 Covered Court</h2>
+          <span class="pub-camp-location" id="pub-camp-location">Caloocan City, NCR</span>
+        </div>
+        <div class="pub-camp-badges">
+          <div class="pub-badge-card">
+            <span class="pub-badge-label">Evacuee Population</span>
+            <span class="pub-badge-value" id="pub-population">—</span>
+          </div>
+          <div class="pub-badge-card">
+            <span class="pub-badge-label">PAGASA Signal</span>
+            <span class="pub-badge-value" id="pub-pagasa">—</span>
+          </div>
+          <div class="pub-badge-card pub-badge-alert" id="pub-alert-card">
+            <span class="pub-badge-label">Supply Status</span>
+            <span class="pub-badge-value pub-alert-value" id="pub-alert-level">—</span>
+          </div>
+          <div class="pub-badge-card">
+            <span class="pub-badge-label">Last Updated</span>
+            <span class="pub-badge-value pub-timestamp-val" id="pub-last-updated">—</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Alert Detail -->
+      <div class="pub-alert-detail" id="pub-alert-detail">
+        <span class="pub-alert-indicator" id="pub-alert-indicator">Analyzing stock levels...</span>
+      </div>
+
+      <!-- Supply Bars -->
+      <div class="pub-supply-grid" id="pub-supply-grid">
+        <!-- Rendered by JS -->
+      </div>
+
+      <!-- Read-only note -->
+      <div class="pub-readonly-note">
+        These figures represent current on-site stock as reported by the designated DSWD relief officer for this center.
+        All values are calculated by ReliefSync's machine learning model (Linear Regression, trained on 900 records of Philippine typhoon disaster data).
+        This page is read-only. To update stock levels, contact the assigned relief officer.
+      </div>
+
+    </div><!-- /pub-dashboard -->
+
+  </main>
+
+  <!-- Footer -->
+  <footer class="pub-footer">
+    <div class="pub-footer-inner">
+      <span>ReliefSync — Predictive Disaster Logistics Engine</span>
+      <span>Built for Philippine Municipal Disaster Operations</span>
+    </div>
+  </footer>
+
+  <script src="public.js"></script>
+</body>
+</html>

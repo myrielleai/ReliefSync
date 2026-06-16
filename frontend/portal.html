@@ -106,6 +106,34 @@
           </div>
 
         </div><!-- /controls-form -->
+
+        <!-- Fix 2: Daily Stock Update Panel -->
+        <div class="stock-update-panel" id="stock-update-panel">
+          <button class="stock-panel-toggle" id="btn-toggle-stock-panel">
+            <span>Update Today's Stock Levels</span>
+            <span class="toggle-arrow" id="stock-toggle-arrow">▼</span>
+          </button>
+          <div class="stock-panel-body" id="stock-panel-body">
+            <div class="stock-update-note">
+              Update these numbers each day with the physical inventory count from the camp logbook. ReliefSync will immediately recalculate the dispatch recommendation.
+            </div>
+            <div class="stock-input-row">
+              <label for="input-stock-water">Bottled Water (units)</label>
+              <input type="number" id="input-stock-water" min="0" placeholder="0" class="stock-number-input">
+            </div>
+            <div class="stock-input-row">
+              <label for="input-stock-rice">Rice Packs (sacks)</label>
+              <input type="number" id="input-stock-rice" min="0" placeholder="0" class="stock-number-input">
+            </div>
+            <div class="stock-input-row">
+              <label for="input-stock-medical">Medical Kits</label>
+              <input type="number" id="input-stock-medical" min="0" placeholder="0" class="stock-number-input">
+            </div>
+            <button id="btn-apply-stock" class="apply-stock-btn">Apply & Recalculate</button>
+            <div class="stock-last-updated" id="stock-last-updated"></div>
+          </div>
+        </div>
+
       </div><!-- /sidebar-top -->
 
       <!-- Action Button -->
@@ -217,11 +245,11 @@
               <text x="35" y="165" class="axis-title y-axis-title" transform="rotate(-90 35 165)">Units Remaining in Stock</text>
               <text x="515" y="315" class="axis-title x-axis-title">Hours Since Typhoon Landfall (without new resupply)</text>
 
-              <!-- Y-Axis tick labels (updated by JS) -->
-              <text x="70" y="54"  class="tick-label label-y">4,000</text>
-              <text x="70" y="129" class="tick-label label-y">2,500</text>
-              <text x="70" y="204" class="tick-label label-y">1,000</text>
-              <text x="70" y="279" class="tick-label label-y">0</text>
+              <!-- Y-Axis tick labels (updated by JS auto-scaler) -->
+              <text x="70" y="54"  class="tick-label label-y" id="ytick-top">4,000</text>
+              <text x="70" y="129" class="tick-label label-y" id="ytick-mid1">2,500</text>
+              <text x="70" y="204" class="tick-label label-y" id="ytick-mid2">1,000</text>
+              <text x="70" y="279" class="tick-label label-y" id="ytick-bot">0</text>
 
               <!-- X-Axis tick labels -->
               <text x="80"  y="295" class="tick-label label-x">Arrival</text>
@@ -325,6 +353,31 @@
 
         <!-- Tab 1: Dataset Viewer -->
         <div id="tab-dataset-view" class="tab-pane">
+
+          <!-- Fix 1: AI Training Info Card -->
+          <div class="training-info-card">
+            <div class="training-info-header">
+              <span class="training-info-title">AI Training Dataset</span>
+              <div class="training-info-badges">
+                <span class="training-badge">900 Records</span>
+                <span class="training-badge">Linear Regression</span>
+                <span class="training-badge">R&sup2; = 79.38%</span>
+                <span class="training-badge">MAE = 1,216 units</span>
+              </div>
+            </div>
+            <p class="training-info-desc">
+              The rows below are what this machine learning model was trained on. Each row represents one historical typhoon event — camp population, PAGASA signal strength, supply category, and how many units were actually consumed. The AI's demand formula was <strong>learned entirely from these records</strong>, not hard-coded.
+            </p>
+            <div class="training-info-columns">
+              <div class="training-col-item"><span class="col-pill">camp_id</span> Which evacuation center (1, 2, or 3)</div>
+              <div class="training-col-item"><span class="col-pill">supply_category_id</span> 1 = Water &nbsp; 2 = Rice &nbsp; 3 = Medical</div>
+              <div class="training-col-item"><span class="col-pill">current_population</span> Number of evacuees at the time</div>
+              <div class="training-col-item"><span class="col-pill">pagasa_signal</span> Storm severity (1–5)</div>
+              <div class="training-col-item"><span class="col-pill">units_consumed</span> Actual demand the AI learned to predict</div>
+            </div>
+            <a id="link-download-training-csv" href="#" class="download-training-csv-btn">Download Training CSV</a>
+          </div>
+
           <div class="dataset-viewer-controls" style="display:flex;justify-content:space-between;align-items:center;margin-bottom:15px;background:var(--color-fill-light);padding:10px 15px;border-radius:8px;">
             <span class="viewer-summary" id="viewer-summary" style="font-size:13px;color:var(--color-text-muted);">Showing records ...</span>
             <div class="pagination-controls" style="display:flex;align-items:center;gap:10px;">
