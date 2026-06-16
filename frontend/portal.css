@@ -508,6 +508,7 @@ body {
   text-transform: uppercase;
   fill: var(--color-text-secondary);
   letter-spacing: 0.5px;
+  text-anchor: middle;
 }
 
 .tick-label {
